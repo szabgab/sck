@@ -5,3 +5,4 @@ urls/
 *.old
 db/logs/
 Makefile
+.DS_Store
