@@ -1,0 +1,8 @@
+Shorten URL System By Celogeek
+
+You need a redis server, and set the connexion in config.yml
+
+To configure nginx + plackup :
+  check nginx.conf and adapt it to yours
+  check plackup startup service and use demonise tools to launch it
+

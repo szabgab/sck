@@ -1,0 +1,27 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-type" content="text/html; charset=<% settings.charset %>" />
+<meta name="keywords" content="<% request.host %>, awesome, url shortener" />
+<meta name="description" content="<% request.host %>, a simple url shortener" />
+<title><% FILTER upper %><% request.host %><% END %> - Shorten URL System By Celogeek</title>
+<link rel="stylesheet" href="<% request.base %>css/style.css" />
+<link rel="stylesheet" href="<% request.base %>css/error.css" />
+<link rel="shortcut icon" href="<% request.base %>favicon.ico" type="image/vnd.microsoft.icon" />
+
+</head>
+<body>
+    <div id="wrapper">
+        <div id="header">
+            Shorten URL system By Celogeek
+        </div>
+        <div id="content">
+            <% content %>
+        </div>
+    </div>
+    <div id="footer">
+        URL By <a href="http://qa.celogeek.com" target="_blank">Celogeek</a> - <a href="<% request.base %>">Shorten your URL</a>
+    </div>
+</body>
+</html>

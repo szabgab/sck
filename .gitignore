@@ -1,0 +1,7 @@
+*.swp
+config.yml
+logs/*.log
+urls/
+*.old
+db/logs/
+Makefile

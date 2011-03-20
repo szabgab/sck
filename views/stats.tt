@@ -1,0 +1,26 @@
+<form method="post" onSubmit="return false;">
+    <div class="formb">
+        <label for="url">Long URL:</label>
+        <input name="url" id="url" class="field" type="text" value="<% url %>" readOnly="true"/>
+    </div>
+    <div class="formb">
+        <label for="shorturl">Short URL : </label>
+        <span id="shorturl" class="spanfield"><a href="<% request.base %><% path %>" target="_blank"><% request.base %><% path %></a></span>
+    </div>
+    <div class="formb">
+        <label for="created_at">Created at : </label>
+        <span id="created_at" class="spanfield"><% created_at %></span>
+    </div>
+    <div class="formb">
+        <label for="last_accessed_at">Last click: </label>
+        <span id="last_accessed_at" class="spanfield"><% last_accessed_at %></span>
+    </div>
+    <div class="formb">
+        <label for="clicks">Clicks : </label>
+        <span id="clicks" class="spanfield"><% clicks %></span>
+    </div>
+    <div class="formb">
+        <label for="clicks_uniq">Uniq Clicks : </label>
+        <span id="clicks" class="spanfield"><% clicks_uniq %></span>
+    </div>
+</form>
