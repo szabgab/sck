@@ -6,9 +6,15 @@
 <meta name="keywords" content="<% request.host %>, awesome, url shortener" />
 <meta name="description" content="<% request.host %>, a simple url shortener" />
 <title><% FILTER upper %><% request.host %><% END %> - Shorten URL System By Celogeek</title>
+<link rel="shortcut icon" href="<% request.base %>favicon.ico" type="image/vnd.microsoft.icon" />
+
+<!--
 <link rel="stylesheet" href="<% request.base %>css/style.css" />
 <link rel="stylesheet" href="<% request.base %>css/error.css" />
-<link rel="shortcut icon" href="<% request.base %>favicon.ico" type="image/vnd.microsoft.icon" />
+<link rel="stylesheet" href="<% request.base %>css/jquery-ui.css" />
+<script type="text/javascript" src="<% request.base %>javascripts/jquery.js"></script>
+<script type="text/javascript" src="<% request.base %>javascripts/jquery-ui.js"></script>
+-->
 
 </head>
 <body>
