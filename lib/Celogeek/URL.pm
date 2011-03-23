@@ -238,7 +238,7 @@ sub missing_title {
     my $self = shift;
     my $url = shift;
     my $tk = $self->_title_key($url);
-    my $expire = 30;
+    my $expire = 24 * 3600; #1 day
     unless ($self->redis->exists($tk)) {
         #set url as title to prevent multiset
         $self->redis->setex($tk, $expire, $url);
