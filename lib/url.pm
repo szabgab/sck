@@ -68,8 +68,25 @@ any ['get', 'post'] => '/' => sub {
 
 get qr{/(.*)$} => sub {
     my ($key) = splat;
-    params->{s} ? _stats_url($key) : _go_url($key);
+    if (params->{s}) {
+        _stats_url($key);
+    } elsif (params->{mt}) {
+        _missing_title_url($key);
+    } else {
+        _go_url($key);
+    }
 };
+
+sub _missing_title_url {
+    my $base = request->base()->as_string;
+    my $key = shift;
+    my $url = Celogeek::URL->new( 'redis' => redis );
+    my $longurl = $url->longen($key);
+    if ($longurl ne '') {
+        $url->missing_title($longurl);
+    }
+    return redirect $base."images/transp.gif";
+}
 
 sub _go_url {
     my $base = request->base()->as_string;

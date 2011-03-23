@@ -8,6 +8,7 @@ use File::Path;
 use File::Spec;
 use DateTime;
 use Carp;
+use WWW::GetPageTitle;
 
 has 'redis' => (
     'is' => 'rw',
@@ -184,28 +185,68 @@ sub _get {
     return \%data;
 }
 
+sub _redis_key {
+    my $self = shift;
+    my $prefix = shift;
+    my $key = shift;
+    return $prefix.":".sha1_hex($key);
+}
+
 sub _path_key {
     my $self = shift;
     my $path = shift;
-    return "p:".sha1_hex($path);
+    return $self->_redis_key("p", $path);
 }
 
 sub _hash_key {
     my $self = shift;
     my $url = shift;
-    return 'h:'.sha1_hex($url);
+    return $self->_redis_key("h", $url);
+}
+
+sub _title_key {
+    my $self = shift;
+    my $url = shift;
+    return $self->_redis_key("t", $url);
 }
 
 sub top10 {
     my $self = shift;
     my @members = $self->redis->zrevrange('s:top10', 0, 9,'WITHSCORES');
     my @top10_data = ();
+    my $missing_title_credit = 3;
     for(my $i=0; $i<@members; $i+=2) {
         my $data = {score => $members[$i+1]};
         $data->{$_} = $self->redis->hget($members[$i], $_) for qw/url path/;
+        $data->{title} = $self->redis->get($self->_title_key($data->{url}));
+        if ($data->{title}) {
+            $data->{alt} = $data->{title}." - ";
+        } else {
+            $data->{title} = $data->{url};
+            if ($missing_title_credit -- > 0) {
+                $data->{missing_title} = 1;
+            }
+            $data->{alt} = "";
+        }
+        $data->{alt} .= $data->{url}." - Score ".$data->{score};
         push @top10_data, $data;
     }
     return \@top10_data;
+}
+
+sub missing_title {
+    my $self = shift;
+    my $url = shift;
+    my $tk = $self->_title_key($url);
+    my $expire = 30;
+    unless ($self->redis->exists($tk)) {
+        #set url as title to prevent multiset
+        $self->redis->setex($tk, $expire, $url);
+        my $gt = WWW::GetPageTitle->new;
+        if ($gt->get_title($url)) {
+            $self->redis->setex($tk, $expire, $gt->title);
+        }
+    }
 }
 
 no Moose;
