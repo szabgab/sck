@@ -214,19 +214,29 @@ sub top10 {
     my $self = shift;
     my @members = $self->redis->zrevrange('s:top10', 0, 9,'WITHSCORES');
     my @top10_data = ();
-    my $missing_title_credit = 3;
     for(my $i=0; $i<@members; $i+=2) {
+        #fetch data
         my $data = {score => $members[$i+1]};
         $data->{$_} = $self->redis->hget($members[$i], $_) for qw/url path/;
-        $data->{title} = $self->redis->get($self->_title_key($data->{url}));
+        my $title_key = $self->_title_key($data->{url});
+        my $hash_key = $self->_hash_key($data->{url});
+        $data->{title} = $self->redis->get($title_key);
+        $data->{alt} = "";
+
+            ### too many try, never try again
         if ($data->{title}) {
-            $data->{alt} = $data->{title}." - ";
+            #if title exist, use it
+            if ($data->{title} ne $data->{url}) {
+                $self->redis->hdel($hash_key, 'missing_title_tries');
+                $data->{alt} = $data->{title}." - ";
+            }
         } else {
             $data->{title} = $data->{url};
-            if ($missing_title_credit -- > 0) {
+            #try to fetch title in asynchrone mode
+            if (($self->redis->hget($hash_key, 'missing_title_tries') || 0) < 5) {
+                $self->redis->hincrby($hash_key, 'missing_title_tries', 1);
                 $data->{missing_title} = 1;
             }
-            $data->{alt} = "";
         }
         $data->{alt} .= $data->{url}." - Score ".$data->{score};
         push @top10_data, $data;
@@ -238,15 +248,19 @@ sub missing_title {
     my $self = shift;
     my $url = shift;
     my $tk = $self->_title_key($url);
-    my $expire = 24 * 3600; #1 day
+    my $expire = 24 * 3600 * 3; #3 day
     unless ($self->redis->exists($tk)) {
         #set url as title to prevent multiset
         #lock 15s to prevent multicall to the same dest
         #if this part crash, it will be allow to retry in a short time
-        $self->redis->setex($tk, 15, $url); 
-        my $gt = WWW::GetPageTitle->new;
-        if ($gt->get_title($url)) {
-            $self->redis->setex($tk, $expire, $gt->title);
+        $self->redis->setex($tk, 60, $url); 
+        eval {
+            ### WWW::GetPageTitle react bad if page are not html
+            local $SIG{__WARN__};
+            my $gt = WWW::GetPageTitle->new;
+            if ($gt->get_title($url)) {
+                $self->redis->setex($tk, $expire, $gt->title);
+            }
         }
     }
 }
