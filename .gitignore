@@ -6,3 +6,4 @@ urls/
 db/logs/
 Makefile
 .DS_Store
+*.bak
