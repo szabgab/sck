@@ -1,6 +1,6 @@
 package Celogeek::URL;
 use strict;
-use Moose;
+use Mouse;
 use Data::Rand qw/rand_data_string/;
 use Digest::SHA1 qw/sha1_hex/;
 use File::Basename;
@@ -265,6 +265,6 @@ sub missing_title {
     }
 }
 
-no Moose;
+no Mouse;
 __PACKAGE__->meta->make_immutable();
 1;
