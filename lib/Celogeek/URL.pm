@@ -1,5 +1,6 @@
 package Celogeek::URL;
 use strict;
+use warnings;
 use Mouse;
 use Data::Rand qw/rand_data_string/;
 use Digest::SHA1 qw/sha1_hex/;

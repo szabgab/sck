@@ -1,4 +1,6 @@
 package url;
+use strict;
+use warnings;
 use Dancer ':syntax';
 use Dancer::Plugin::Redis;
 use Celogeek::URL;
