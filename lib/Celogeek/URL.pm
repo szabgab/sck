@@ -241,7 +241,9 @@ sub missing_title {
     my $expire = 24 * 3600; #1 day
     unless ($self->redis->exists($tk)) {
         #set url as title to prevent multiset
-        $self->redis->setex($tk, $expire, $url);
+        #lock 15s to prevent multicall to the same dest
+        #if this part crash, it will be allow to retry in a short time
+        $self->redis->setex($tk, 15, $url); 
         my $gt = WWW::GetPageTitle->new;
         if ($gt->get_title($url)) {
             $self->redis->setex($tk, $expire, $gt->title);
