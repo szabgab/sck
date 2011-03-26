@@ -1,5 +1,5 @@
 <div class="span-14 last">
-    <div id="shortenlinks" class="prepend-top">
+    <div id="shortenlinks">
         <% INCLUDE _shortenlinks.tt %>
     </div>
 </div>
