@@ -19,7 +19,8 @@ any [ 'get', 'post' ] => '/' => sub {
     );
     my $shorturl = "";
     my $statsurl = "";
-    my $warning  = "";
+    my $error    = "";
+    my $notice   = "";
     my $top10    = [];
 
     #top10 not for bookmarklet
@@ -31,14 +32,14 @@ any [ 'get', 'post' ] => '/' => sub {
         my $short = $url->shorten($longurl);
 
         if ( $short eq 'NO WAY TO SHORTEN' ) {
-            $warning .= "Impossible to shorten this URL";
+            $error = "Impossible to shorten this URL";
         }
         elsif ( $short eq 'BAD URL' ) {
-            $warning .=
+            $error =
               "Your url is bad. It has to start with 'http://' or 'https://'.";
         }
         elsif ( $short eq 'TOO MANY TRIES' ) {
-            $warning .=
+            $error =
                 "Too many tries (> "
               . $url->max_generated_times
               . "). Try again.";
@@ -47,11 +48,11 @@ any [ 'get', 'post' ] => '/' => sub {
             $shorturl = $base . $short;
             $statsurl = $shorturl . "?s=1";
             if ( $url->generated_times ) {
-                $warning .=
+                $notice =
                   "Generated after " . $url->generated_times . " tries.";
             }
             else {
-                $warning .= "Already registered in database";
+                $notice = "Already registered in database";
             }
         }
     }
@@ -71,14 +72,24 @@ any [ 'get', 'post' ] => '/' => sub {
             return redirect "http://twitter.com/?status=" . $title_str;
         }
         else {
-            template params->{b} ? 'bookmarlet' : 'index',
+            my $tpl = "index";
+            my $opt = {};
+            if (params->{b}) {
+                $tpl = "bookmarlet";
+            }
+            if (params->{x}) {
+                $tpl = "_shortenlinks.tt";
+                $opt = {layout => undef};
+            }
+            template $tpl,
               {
                 url      => $longurl,
                 shorturl => $shorturl,
                 statsurl => $statsurl,
-                warning  => $warning,
-                top10    => $top10
-              };
+                top10    => $top10,
+                notice   => $notice,
+                error    => $error
+              }, $opt;
         }
     }
 };
