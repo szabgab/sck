@@ -1,0 +1,30 @@
+<h3 class="caps">Your shorten links</h3>
+<form class="inline" method="post">
+    <fieldset>
+        <div class="span-13 last">
+            <label for="url_r" class="span-2">Your URL</label>
+            <input type="text" name="url_r" class="text readonly" value="<% url %>"/>
+            <button href="<% url %>" target="_blank" class="last">Go &gt;&gt;</button>
+        </div>
+        <div class="span-13 last">
+            <label for="shorturl_r" class="span-2">Short URL</label>
+            <input type="text" name="shorturl_r" class="text readonly" value="<% shorturl %>"/>
+            <button href="<% shorturl %>" target="_blank" class="last">Go &gt;&gt;</button>
+        </div>
+        <div class="span-13 last">
+            <label for="statsurl_r" class="span-2">Stats URL</label>
+            <input type="text" name="statsurl_r" class="text readonly" value="<% statsurl %>"/>
+            <button href="<% statsurl %>" target="_blank" class="last">Go &gt;&gt;</button>
+        </div>
+        <div class="span-13 last">
+            <% IF bookmarklet %>
+            <button action="close" class="center">Close</button>
+            <% ELSE %>
+            <input type="submit" value="Try another" class="center"/>
+            <% END %>
+        </div>
+    </fieldset>
+</form>
+
+<% IF error %><div class="error"><% error %></div><% END %>
+<% IF notice %><div class="notice"><% notice %></div><% END %>

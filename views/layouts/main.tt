@@ -6,22 +6,42 @@
 <meta name="keywords" content="<% request.host %>, awesome, url shortener" />
 <meta name="description" content="<% request.host %>, a simple url shortener" />
 <title><% FILTER upper %><% request.host %><% END %> - Shorten URL System By Celogeek</title>
-<link rel="stylesheet" href="<% request.base %>css/style.css" />
-<link rel="stylesheet" href="<% request.base %>css/error.css" />
 <link rel="shortcut icon" href="<% request.base %>favicon.ico" type="image/vnd.microsoft.icon" />
+
+<link rel="stylesheet" href="<% request.base %>stylesheets/blueprint/screen.css" type="text/css" media="screen, projection">
+<link rel="stylesheet" href="<% request.base %>stylesheets/blueprint/print.css" type="text/css" media="print">
+<!--[if lt IE 8]>
+    <link rel="stylesheet" href="<% request.base %>stylesheets/blueprint/ie.css" type="text/css" media="screen, projection">
+<![endif]-->
+
+<link rel="stylesheet" href="<% request.base %>stylesheets/blueprint/plugins/fancy-type/screen.css" type="text/css" media="screen, projection">
+<link rel="stylesheet" href="<% request.base %>stylesheets/blueprint/plugins/tabs/screen.css" type="text/css" media="screen, projection">
+<link rel="stylesheet" href="<% request.base %>stylesheets/blueprint/plugins/sck/screen.css" type="text/css" media="screen, projection">
+<% IF bookmarklet %>
+<link rel="stylesheet" href="<% request.base %>stylesheets/blueprint/plugins/sck/screen_bookmarklet.css" type="text/css" media="screen, projection">
+<% END %>
+
+<script type="text/javascript" src="<% request.base %>javascripts/jquery-1.5.1.min.js"></script>
+<script type="text/javascript" src="<% request.base %>javascripts/sck.js"></script>
+
 
 </head>
 <body>
-    <div id="wrapper">
-        <div id="header">
-            Shorten URL system By Celogeek
+    <div class="container">
+        <% SET span_size = bookmarklet ? 14 : 24 %>
+        <div id="header" class="span-<% span_size %> last">
+            <h1 class="loud"><% FILTER ucfirst %><% request.host %><% END %></h1>
         </div>
-        <div id="content">
+        <hr />
+        <div id="subheader" class="span-<% span_size %> last">
+            <h3 class="alt">An awesome shorten system written with PerlDancer by <a href="http://qa.celogeek.com/user/3" target="_blank" class="quiet">Celogeek</a>.</h3>
+        </div>
+        <hr />
+        <div class="span-<% span_size %> last">
             <% content %>
         </div>
-    </div>
-    <div id="footer">
-        URL By <a href="http://qa.celogeek.com" target="_blank">Celogeek</a> - <a href="<% request.base %>">Shorten your URL</a>
+        <div class="span-<% span_size %> last">&nbsp;</div>
+        <hr />
     </div>
 </body>
 </html>

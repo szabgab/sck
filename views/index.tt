@@ -1,76 +1,22 @@
-<h3>Shorten your URL :</h3>
-<p>Type your url there, you will have a short link and a stats link. If your link is visited enought you will appear in the Top 10 of the week.</p>
-<form method="post">
-    <div class="formb">
-        <label for="url">Long URL :</label>
-        <input name="url" id="url" class="field" type="text" value="<% url %>"/>
-        <input type="submit" value="Shorten &gt;&gt;" class="fieldsubmit"/>
+<ul class="tabs">
+    <% INCLUDE _tabs.tt %>
+</ul>
+<div>
+<div class="span-14 colborder">
+    <div id="shortenform" class="<% IF bookmarklet_installed %>tabclosed <% END %>">
+        <% INCLUDE _shortenformtab.tt %>
     </div>
-    <div class="formb">
-        <label for="shorturl">Short URL :</label>
-        <span id="shorturl" class="spanfield"><a href="<% shorturl %>" target="_blank"><% shorturl %></a></span>
+    <div id="shortenlinks" class="tabclosed">
+        <% INCLUDE _shortenlinks.tt %>
     </div>
-    <div class="formb">
-        <label for="statsurl">Stats URL :</label>
-        <span id="statsurl" class="spanfield"><a href="<% statsurl %>" target="_blank"><% statsurl %></a></span>
+    <div id="bookmarklet" class="<% UNLESS bookmarklet_installed %>tabclosed <% END %>">
+        <% IF bookmarklet_installed %>
+            <div class="notice" id="bookmarklet_installed">Bookmarklet ready to be used !</div>
+        <% END %>
+        <% INCLUDE _bookmarklettab.tt %>
     </div>
-</form>
-<div class="warning"><% warning %></div>
-<div class="otherlinks">
-    <h3>TOP 10 of the week :</h3>
-    <ol>
-    <% FOREACH data = top10 %>
-    <li><span class="score">( <% data.score %> )</span>
-    <a href="<% request.base %><% data.path %>" target="_blank">
-    <% FILTER truncate(100,'&hellip;') %><% data.url %><% END %>
-    </a></li>
-    <% END %>
-    </ol>
 </div>
-<div class="otherlinks">
-    <h3>Other possible tiny links :</h3>
-    <ul>
-        <li><a href="http://sck.to">http://sck.to (Recommended)</a></li>
-        <li><a href="http://susbck.com">http://susbck.com</a></li>
-        <li><a href="http://url.celogeek.fr">http://url.celogeek.fr</a></li>
-        <li><a href="http://url.celogeek.com">http://url.celogeek.com</a></li>
-    </ul>
+<div class="span-9 last">
+    <% INCLUDE _sidebar.tt %>
 </div>
-<div class="otherlinks">
-    <h3>API :</h3>
-    <ul><li><% request.base %>?a=1&url=YOURURL</li></ul>
-    <p>It will return the short version of your URL if it could shorten them. In otherwise they will return your url.</p>
-</div>
-<div class="otherlinks">
-    <h3>Bookmarlets :</h3>
-    <ul>
-    <li><a href="javascript:(function(){var sck='<% request.base %>?b=1&url='; var url=encodeURIComponent(location.href); var w=800; var h=300; var l=(screen.width-w)/2; var t=(screen.height-h)/2; window.open(sck+url,'sck','location=no,menubar=no,resizable=no,scrollbars=no,status=no,titlebar=no,toolbar=no,width='+w+',height='+h+',top='+t+',left='+l);})();">Shorten with <% request.host %></a></b><//li>
-    <li><a href="javascript:(function(){var sck='<% request.base %>?t=1&url='; var url=encodeURIComponent(location.href); var title=encodeURIComponent(document.title); window.open(sck+url+'&title='+title);})();">Post to twitter with <% request.host %></a></li>
-    </ul>
-</div>
-<div class="otherlinks">
-    <form onSubmit="return false;">
-    <h3>Bookmarlets for Safari Mobile :</h3>
-    <p>Add this page to your bookmark and edit them (use Copy / Paste).</p>
-    <br/>
-    <p><b>Shorten with <% request.host %></b></p>
-    <div class="formb">
-        <label for="stitle">Label :</label>
-        <input type="text" value="Shorten with <% request.host %>" class="field" id="stitle"/>
-    </div>
-    <div class="formb">
-        <label for="surl">URL</label>
-        <input type="text" value="javascript:(function(){var sck='<% request.base %>?b=1&url='; var url=encodeURIComponent(location.href); window.open(sck+url);})();" class="field" id="surl"/>
-    </div>
-    <br/>
-    <p><b>Post to twitter with <% request.host %></b></p>
-    <div class="formb">
-        <label for="stitle">Label :</label>
-        <input type="text" value="Post to twitter with <% request.host %>" class="field" id="stitle"/>
-    </div>
-    <div class="formb">
-        <label for="surl">URL</label>
-        <input type="text" value="javascript:(function(){var sck='<% request.base %>?t=1&url='; var url=encodeURIComponent(location.href); var title=encodeURIComponent(document.title); window.open(sck+url+'&title='+title);})();" class="field" id="surl"/>
-    </div>
-    </form>
 </div>

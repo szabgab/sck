@@ -1,0 +1,8 @@
+<h3 class="caps">Enter your URL and click on Shorten</h3>
+<form class="inline" method="post">
+    <fieldset>
+        <label for="url" class="span-2">Your URL</label>
+        <input type="text" name="url" value="<% url %>" class="text"/>
+        <input type="submit" value="Shorten &gt;&gt;"/>
+    </fieldset>
+</form>
