@@ -41,6 +41,16 @@ $('button[href]').live('click',function(e) {
     window.open(obj.attr('href'), obj.attr('target'));
 });
 
+$('button[action]').live('click',function(e) {
+    e.preventDefault();
+    var obj = $(this);
+    switch(obj.attr('action')) {
+        case 'close':
+            window.close();
+            break;
+    }
+});
+
 $('div#shortenform form').live('submit',function(e) {
     e.preventDefault();
     var data = $('div#shortenform form').serializeArray();
@@ -57,5 +67,9 @@ $('div#shortenform form').live('submit',function(e) {
 $('div#shortenlinks form').live('submit',function(e) {
     e.preventDefault();
     SCK.switchtab($('div#shortenform'));
+});
+
+$('div#bookmarlet form').live('submit',function(e) {
+    e.preventDefault();
 });
 

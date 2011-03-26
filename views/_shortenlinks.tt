@@ -10,7 +10,11 @@
         <label for="statsurl_r" class="span-2">Stats URL</label>
         <input type="text" name="statsurl_r" class="text readonly" value="<% statsurl %>"/>
         <button href="<% statsurl %>" target="_blank" class="last">Go &gt;&gt;</button>
+        <% IF bookmarklet %>
+        <button action="close" class="center">Close</button>
+        <% ELSE %>
         <input type="submit" value="Try another" class="center"/>
+        <% END %>
     </fieldset>
 </form>
 

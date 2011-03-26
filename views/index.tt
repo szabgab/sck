@@ -8,7 +8,7 @@
     <div id="shortenlinks" class="tabclosed prepend-top">
         <% INCLUDE _shortenlinks.tt %>
     </div>
-    <div id="bookmarlet" class="tabclosed prepend-top">
+    <div id="bookmarklet" class="tabclosed prepend-top">
         <% INCLUDE _bookmarlettab.tt %>
     </div>
 </div>

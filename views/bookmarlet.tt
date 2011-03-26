@@ -1,15 +1,6 @@
-<form method="post">
-    <div class="formb">
-        <label for="url">Long URL : </label>
-        <span id="url" class="spanfield"><a href="<% url %>" target="_blank"><% FILTER truncate(60,'&hellip;') %><% url %><% END %></a></span>
+<% INCLUDE _header_bookmarklet.tt %>
+<div class="span-14 last">
+    <div id="shortenlinks" class="prepend-top">
+        <% INCLUDE _shortenlinks.tt %>
     </div>
-    <div class="formb">
-        <label for="shorturl">Short URL : </label>
-        <span id="shorturl" class="spanfield"><a href="<% shorturl %>" target="_blank"><% shorturl %></a></span>
-    </div>
-    <div class="formb">
-        <label for="statsurl">Stats URL : </label>
-        <span id="statsurl" class="spanfield"><a href="<% statsurl %>" target="_blank"><% statsurl %></a></span>
-    </div>
-</form>
-<div class="warning"><% warning %></div>
+</div>

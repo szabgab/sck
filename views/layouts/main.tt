@@ -17,6 +17,9 @@
 <link rel="stylesheet" href="<% request.base %>stylesheets/blueprint/plugins/fancy-type/screen.css" type="text/css" media="screen, projection">
 <link rel="stylesheet" href="<% request.base %>stylesheets/blueprint/plugins/tabs/screen.css" type="text/css" media="screen, projection">
 <link rel="stylesheet" href="<% request.base %>stylesheets/blueprint/plugins/sck/screen.css" type="text/css" media="screen, projection">
+<% IF bookmarklet %>
+<link rel="stylesheet" href="<% request.base %>stylesheets/blueprint/plugins/sck/screen_bookmarklet.css" type="text/css" media="screen, projection">
+<% END %>
 
 <script type="text/javascript" src="<% request.base %>javascripts/jquery-1.5.1.min.js"></script>
 <script type="text/javascript" src="<% request.base %>javascripts/sck.js"></script>
@@ -25,17 +28,9 @@
 </head>
 <body>
     <div class="container">
-        <div id="header" class="span-24 last">
-            <h1 class="loud"><% FILTER ucfirst %><% request.host %><% END %></h1>
-        </div>
-
-        <hr />
-        <div id="subheader" class="span-24 last">
-            <h3 class="alt">An awesome shorten system written with PerlDancer.</h3>
-        </div>
-
-        <hr />
-
+        <% UNLESS bookmarklet %>
+            <% INCLUDE _header.tt %>
+        <% END %>
         <% content %>
     </div>
 </body>
