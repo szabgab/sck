@@ -142,7 +142,8 @@ sub _stats_url {
     my $key   = shift;
     my $url   = Celogeek::URL->new( 'redis' => redis );
     my $stats = $url->stats( $key, { 'date' => "%c UTC" } );
-    template 'stats', $url->stats( $key, { 'date' => "%c UTC" } );
+    $stats->{shorturl} = $base.$stats->{path};
+    template 'stats', $stats;
 }
 
 true;
