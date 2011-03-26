@@ -1,0 +1,21 @@
+<div>
+    <h3 class="caps">Top 10 of the week</h3>
+
+    <div class="box">
+        <ol>
+            <% FOREACH data = top10 %>
+            <div class="quiet">
+                <li>
+                <a href="<% request.base %><% data.path %>" target="_blank" class="quiet" title="<% data.alt %>">
+                    <% FILTER truncate(50, "&hellip;") %><% data.title %><% END %>
+                    <% IF data.missing_title %>
+                    <img src="<% request.base %><% data.path %>?mt=1"/>
+                    <% END %>
+                </a>
+                </li>
+            </div>
+            <% END %>
+        </ol>
+    </div>
+</div>
+

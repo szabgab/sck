@@ -1,26 +1,35 @@
-<form method="post" onSubmit="return false;">
-    <div class="formb">
-        <label for="url">Long URL:</label>
-        <input name="url" id="url" class="field" type="text" value="<% url %>" readOnly="true"/>
-    </div>
-    <div class="formb">
-        <label for="shorturl">Short URL : </label>
-        <span id="shorturl" class="spanfield"><a href="<% request.base %><% path %>" target="_blank"><% request.base %><% path %></a></span>
-    </div>
-    <div class="formb">
-        <label for="created_at">Created at : </label>
-        <span id="created_at" class="spanfield"><% created_at %></span>
-    </div>
-    <div class="formb">
-        <label for="last_accessed_at">Last click: </label>
-        <span id="last_accessed_at" class="spanfield"><% last_accessed_at %></span>
-    </div>
-    <div class="formb">
-        <label for="clicks">Clicks : </label>
-        <span id="clicks" class="spanfield"><% clicks %></span>
-    </div>
-    <div class="formb">
-        <label for="clicks_uniq">Uniq Clicks : </label>
-        <span id="clicks" class="spanfield"><% clicks_uniq %></span>
-    </div>
+<h3 class="caps">Your stats</h3>
+<form class="inline" method="post">
+    <fieldset>
+        <div class="span-23 last">
+            <label for="url_r" class="span-2">Your URL</label>
+            <input type="text" name="url_r" class="text readonly" value="<% url %>"/>
+            <button href="<% url %>" target="_blank" class="last">Go &gt;&gt;</button>
+        </div>
+        <div class="span-23 last">
+            <label for="shorturl_r" class="span-2">Short URL</label>
+            <input type="text" name="shorturl_r" class="text readonly" value="<% shorturl %>"/>
+            <button href="<% shorturl %>" target="_blank" class="last">Go &gt;&gt;</button>
+        </div>
+        <div class="span-23 last">
+            <label for="url_r_created_at" class="span-2">Created at</label>
+            <input type="text" name="url_r_created_at" class="text readonly" value="<% created_at %>"/>
+        </div>
+        <div class="span-23 last">
+            <label for="url_r_last_accessed_at" class="span-2">Created at</label>
+            <input type="text" name="url_r_last_accessed_at" class="text readonly" value="<% last_accessed_at %>"/>
+        </div>
+        <div class="span-23 last">
+            <label for="url_r_clicks" class="span-2">Created at</label>
+            <input type="text" name="url_r_clicks" class="text readonly" value="<% clicks %>"/>
+        </div>
+        <div class="span-23 last">
+            <label for="url_r_clicks_uniq" class="span-2">Created at</label>
+            <input type="text" name="url_r_clicks_uniq" class="text readonly" value="<% clicks_uniq %>"/>
+        </div>
+    </fieldset>
 </form>
+
+<% IF error %><div class="error"><% error %></div><% END %>
+<% IF notice %><div class="notice"><% notice %></div><% END %>
+
