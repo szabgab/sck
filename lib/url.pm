@@ -6,7 +6,7 @@ use Dancer::Plugin::Redis;
 use Celogeek::URL;
 use CGI;
 
-our $VERSION = '0.1';
+our $VERSION = '0.2';
 
 any [ 'get', 'post' ] => '/' => sub {
     my $base        = request->base()->as_string;
