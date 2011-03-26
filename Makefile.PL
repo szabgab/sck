@@ -17,7 +17,7 @@ WriteMakefile(
         'Dancer'     => 1.3012,
         'Dancer::Plugin::Redis' => 0,
         'Template' => 0,
-        'Moose'      => 0,
+        'Mouse'      => 0,
         'Data::Rand' => 0,
         'File::Spec' => 0,
         'Digest::SHA1' => 0,
