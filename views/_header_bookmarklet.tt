@@ -1,4 +1,0 @@
-<div id="header" class="span-14 last">
-    <h1 class="loud"><% FILTER ucfirst %><% request.host %><% END %></h1>
-</div>
-<hr />

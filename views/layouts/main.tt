@@ -28,10 +28,20 @@
 </head>
 <body>
     <div class="container">
-        <% UNLESS bookmarklet %>
-            <% INCLUDE _header.tt %>
-        <% END %>
-        <% content %>
+        <% SET span_size = bookmarklet ? 14 : 24 %>
+        <div id="header" class="span-<% span_size %> last">
+            <h1 class="loud"><% FILTER ucfirst %><% request.host %><% END %></h1>
+        </div>
+        <hr />
+        <div id="subheader" class="span-<% span_size %> last">
+            <h3 class="alt">An awesome shorten system written with PerlDancer.</h3>
+        </div>
+        <hr />
+        <div class="span-<% span_size %> last">
+            <% content %>
+        </div>
+        <div class="span-<% span_size %> last">&nbsp;</div>
+        <hr />
     </div>
 </body>
 </html>

@@ -1,4 +1,3 @@
-<% INCLUDE _header_bookmarklet.tt %>
 <div class="span-14 last">
     <div id="shortenlinks" class="prepend-top">
         <% INCLUDE _shortenlinks.tt %>

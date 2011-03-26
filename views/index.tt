@@ -1,20 +1,22 @@
-<div class="span-14">
-    <ul class="tabs">
-        <% INCLUDE _tabs.tt %>
-    </ul>
-    <div id="shortenform" class="<% IF bookmarklet_installed %>tabclosed <% END %>prepend-top">
+<ul class="tabs">
+    <% INCLUDE _tabs.tt %>
+</ul>
+<div>
+<div class="span-14 colborder">
+    <div id="shortenform" class="<% IF bookmarklet_installed %>tabclosed <% END %>">
         <% INCLUDE _shortenformtab.tt %>
     </div>
-    <div id="shortenlinks" class="tabclosed prepend-top">
+    <div id="shortenlinks" class="tabclosed">
         <% INCLUDE _shortenlinks.tt %>
     </div>
-    <div id="bookmarklet" class="<% UNLESS bookmarklet_installed %>tabclosed <% END %>prepend-top">
+    <div id="bookmarklet" class="<% UNLESS bookmarklet_installed %>tabclosed <% END %>">
         <% IF bookmarklet_installed %>
             <div class="notice" id="bookmarklet_installed">Bookmarklet ready to be used !</div>
         <% END %>
         <% INCLUDE _bookmarklettab.tt %>
     </div>
 </div>
-<div class="span-9 lcolborder last">
+<div class="span-9 last">
     <% INCLUDE _sidebar.tt %>
+</div>
 </div>
