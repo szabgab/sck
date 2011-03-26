@@ -10,7 +10,7 @@
     </div>
     <div id="bookmarklet" class="<% UNLESS bookmarklet_installed %>tabclosed <% END %>prepend-top">
         <% IF bookmarklet_installed %>
-            <div class="notice">Bookmarklet ready to be used !</div>
+            <div class="notice" id="bookmarklet_installed">Bookmarklet ready to be used !</div>
         <% END %>
         <% INCLUDE _bookmarklettab.tt %>
     </div>

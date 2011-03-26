@@ -73,3 +73,6 @@ $('div#bookmarlet form').live('submit',function(e) {
     e.preventDefault();
 });
 
+$(document).ready(function() {
+    $('div#bookmarklet_installed').delay(5000).fadeOut('slow');
+});
