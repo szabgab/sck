@@ -34,7 +34,7 @@
         </div>
         <hr />
         <div id="subheader" class="span-<% span_size %> last">
-            <h3 class="alt">An awesome shorten system written with PerlDancer.</h3>
+            <h3 class="alt">An awesome shorten system written with PerlDancer by <a href="http://qa.celogeek.com/user/3" target="_blank" class="quiet">Celogeek</a>.</h3>
         </div>
         <hr />
         <div class="span-<% span_size %> last">
