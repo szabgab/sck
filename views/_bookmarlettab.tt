@@ -1,0 +1,7 @@
+<h3 class="caps">Drop this to your bookmark</h3>
+<div class="box">
+    <ul>
+        <li><a class="quiet" href="javascript:(function(){var sck='<% request.base %>?b=1&url='; var url=encodeURIComponent(location.href); var w=800; var h=300; var l=(screen.width-w)/2; var t=(screen.height-h)/2; window.open(sck+url,'sck','location=no,menubar=no,resizable=no,scrollbars=no,status=no,titlebar=no,toolbar=no,width='+w+',height='+h+',top='+t+',left='+l);})();">Shorten with <% request.host %></a></li>
+        <li><a class="quiet" href="javascript:(function(){var sck='<% request.base %>?t=1&url='; var url=encodeURIComponent(location.href); var title=encodeURIComponent(document.title); window.open(sck+url+'&title='+title);})();">Post to twitter with <% request.host %></a></li>
+    </ul>
+</div>
