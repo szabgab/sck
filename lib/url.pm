@@ -75,7 +75,7 @@ any [ 'get', 'post' ] => '/' => sub {
             my $tpl = "index";
             my $opt = {};
             if (params->{b}) {
-                $tpl = "bookmarlet.tt";
+                $tpl = "bookmarklet.tt";
             }
             if (params->{x}) {
                 $tpl = "_shortenlinks.tt";
@@ -89,7 +89,8 @@ any [ 'get', 'post' ] => '/' => sub {
                 top10    => $top10,
                 notice   => $notice,
                 error    => $error,
-                bookmarklet => params->{b}
+                bookmarklet => params->{b},
+                bookmarklet_installed => params->{ib}
               }, $opt;
         }
     }
