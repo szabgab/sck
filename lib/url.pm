@@ -7,8 +7,6 @@ use Dancer::Plugin::Redis;
 use Celogeek::URL;
 use URI::Escape;
 
-our $VERSION = '0.3';
-
 any [ 'get', 'post' ] => '/' => sub {
     my $base        = request->base()->as_string;
     my $longurl     = params->{url} // "";

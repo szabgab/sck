@@ -7,3 +7,6 @@ db/logs/
 Makefile
 .DS_Store
 *.bak
+*.tdy
+blib
+pm_to_blib

@@ -11,6 +11,8 @@ use DateTime;
 use Carp;
 use WWW::GetPageTitle;
 
+our $VERSION = '0.2';
+
 has 'redis' => (
     'is'       => 'rw',
     'isa'      => 'Redis',
