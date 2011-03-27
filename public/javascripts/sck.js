@@ -32,7 +32,9 @@ $('ul.tabs a').live('click', function(e) {
 });
 
 $('input.readonly').live('keypress',function(e) {
-    e.preventDefault();
+    if(!e.metaKey){
+        e.preventDefault();
+    }
 });
 
 $('button[href]').live('click',function(e) {
