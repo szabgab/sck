@@ -1,8 +1,13 @@
-use Test::More tests => 2;
+#!/usr/bin/env perl
 use strict;
 use warnings;
+use Test::More tests => 2;
 
 # the order is important
+BEGIN {
+    $ENV{DANCER_ENVIRONMENT}="testing";
+    use Dancer;
+}
 use url;
 use Dancer::Test;
 

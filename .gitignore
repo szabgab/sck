@@ -10,3 +10,4 @@ Makefile
 *.tdy
 blib
 pm_to_blib
+t/db/*.rdb
