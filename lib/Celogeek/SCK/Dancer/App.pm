@@ -1,17 +1,17 @@
-package url;
+package Celogeek::SCK::Dancer::App;
 use strict;
 use warnings;
 use 5.012;
 use Dancer ':syntax';
 use Dancer::Plugin::Redis;
-use Celogeek::URL;
+use Celogeek::SCK;
 use URI::Escape;
 
 any [ 'get', 'post' ] => '/' => sub {
     my $base        = request->base()->as_string;
     my $longurl     = params->{url} // "";
     my $max_letters = length($longurl) - length($base) - 1;
-    my $url         = Celogeek::URL->new(
+    my $url         = Celogeek::SCK->new(
         'redis'             => redis,
         max_generated_times => 5,
         max_letters         => $max_letters
@@ -111,7 +111,7 @@ get qr{/(.*)$} => sub {
 sub _missing_title_url {
     my $base    = request->base()->as_string;
     my $key     = shift;
-    my $url     = Celogeek::URL->new( 'redis' => redis );
+    my $url     = Celogeek::SCK->new( 'redis' => redis );
     my $longurl = $url->longen($key);
     if ( $longurl ne '' ) {
         $url->missing_title($longurl);
@@ -147,7 +147,7 @@ sub _go_url {
 sub _stats_url {
     my $base  = request->base()->as_string;
     my $key   = shift;
-    my $url   = Celogeek::URL->new( 'redis' => redis );
+    my $url   = Celogeek::SCK->new( 'redis' => redis );
     my $stats = $url->stats( $key, { 'date' => "%c UTC" } );
     $stats->{shorturl} = $base.$stats->{path};
     template 'stats', $stats;

@@ -1,4 +1,19 @@
-package Celogeek::URL;
+package Celogeek::SCK;
+
+# ABSTRACT: Celogeek SCK Core
+
+=head1 DESCRIPTION
+
+Celogeek SCK is a service to shorten your URL
+
+=cut
+
+=head1 AUTHORS
+
+ * Geistteufel <geistteufel@yahoo.fr>
+
+=cut
+
 use strict;
 use warnings;
 use Mouse;
@@ -10,8 +25,6 @@ use File::Spec;
 use DateTime;
 use Carp;
 use WWW::GetPageTitle;
-
-our $VERSION = '0.2';
 
 has 'redis' => (
     'is'       => 'rw',
