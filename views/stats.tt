@@ -16,15 +16,15 @@
             <input type="text" name="url_r_created_at" class="text readonly" value="<% created_at %>"/>
         </div>
         <div class="span-23 last">
-            <label for="url_r_last_accessed_at" class="span-2">Created at</label>
+            <label for="url_r_last_accessed_at" class="span-2">Last click at</label>
             <input type="text" name="url_r_last_accessed_at" class="text readonly" value="<% last_accessed_at %>"/>
         </div>
         <div class="span-23 last">
-            <label for="url_r_clicks" class="span-2">Created at</label>
+            <label for="url_r_clicks" class="span-2">Clicks</label>
             <input type="text" name="url_r_clicks" class="text readonly" value="<% clicks %>"/>
         </div>
         <div class="span-23 last">
-            <label for="url_r_clicks_uniq" class="span-2">Created at</label>
+            <label for="url_r_clicks_uniq" class="span-2">Uniq clicks</label>
             <input type="text" name="url_r_clicks_uniq" class="text readonly" value="<% clicks_uniq %>"/>
         </div>
     </fieldset>
