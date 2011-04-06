@@ -6,7 +6,7 @@ use Dancer::Plugin::Redis;
 use Celogeek::URL;
 use CGI;
 
-our $VERSION = '0.2';
+our $VERSION = '0.3';
 
 any [ 'get', 'post' ] => '/' => sub {
     my $base        = request->base()->as_string;
@@ -124,17 +124,25 @@ sub _go_url {
     my $base        = request->base()->as_string;
     my $key         = shift;
     my $url         = Celogeek::URL->new( 'redis' => redis );
-    my $click       = 1;
-    my $click_uniq  = 0;
-    my $cookie_name = join( "_", "sck", $key );
-    $cookie_name =~ s/\/+/_/g;
-    unless ( defined cookies->{$cookie_name} ) {
-        set_cookie $cookie_name => "1", expires => ( time + 86400 );
-        $click_uniq = 1;
+    if (params->{a}) {
+        my $longurl = $url->longen( $key );
+        $longurl = $base if $longurl eq '';
+        content_type "text/plain";
+        return $longurl;
     }
-    my $longurl = $url->longen( $key, $click, $click_uniq );
-    $longurl = $base if $longurl eq '';
-    return redirect $longurl;
+    else {
+        my $click       = 1;
+        my $click_uniq  = 0;
+        my $cookie_name = join( "_", "sck", $key );
+        $cookie_name =~ s/\/+/_/g;
+        unless ( defined cookies->{$cookie_name} ) {
+            set_cookie $cookie_name => "1", expires => ( time + 86400 );
+            $click_uniq = 1;
+        }
+        my $longurl = $url->longen( $key, $click, $click_uniq );
+        $longurl = $base if $longurl eq '';
+        return redirect $longurl;
+    }
 }
 
 sub _stats_url {
