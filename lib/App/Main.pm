@@ -1,4 +1,4 @@
-package Celogeek::SCK::Dancer::App;
+package App::Main;
 use strict;
 use warnings;
 use 5.012;
@@ -122,7 +122,7 @@ sub _missing_title_url {
 sub _go_url {
     my $base        = request->base()->as_string;
     my $key         = shift;
-    my $url         = Celogeek::URL->new( 'redis' => redis );
+    my $url         = Celogeek::SCK->new( 'redis' => redis );
     if (params->{a}) {
         my $longurl = $url->longen( $key );
         $longurl = $base if $longurl eq '';

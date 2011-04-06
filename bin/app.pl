@@ -1,4 +1,4 @@
 #!/usr/bin/env perl
 use Dancer;
-use Celogeek::SCK::Dancer::App;
+use App::Main;
 dance;

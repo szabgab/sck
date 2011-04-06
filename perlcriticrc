@@ -1,0 +1,4 @@
+severity = 3
+theme = (pbp || security) && bugs
+include = NamingConventions ClassHierarchies
+
