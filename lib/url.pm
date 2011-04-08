@@ -1,16 +1,17 @@
 package url;
 use strict;
 use warnings;
+use 5.012;
 use Dancer ':syntax';
 use Dancer::Plugin::Redis;
 use Celogeek::URL;
-use CGI;
+use URI::Escape;
 
 our $VERSION = '0.3';
 
 any [ 'get', 'post' ] => '/' => sub {
     my $base        = request->base()->as_string;
-    my $longurl     = params->{url};
+    my $longurl     = params->{url} // "";
     my $max_letters = length($longurl) - length($base) - 1;
     my $url         = Celogeek::URL->new(
         'redis'             => redis,
@@ -68,7 +69,7 @@ any [ 'get', 'post' ] => '/' => sub {
             my @title = ();
             push @title, params->{title} if params->{title};
             push @title, $shorturl ne "" ? $shorturl : $longurl;
-            my $title_str = CGI::escape( join( ' - ', @title ) );
+            my $title_str = uri_escape_utf8( join( ' - ', @title ) );
             return redirect "http://twitter.com/?status=" . $title_str;
         }
         else {
