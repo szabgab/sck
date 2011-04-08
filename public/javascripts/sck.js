@@ -60,7 +60,6 @@ $('div#shortenform form').live('submit',function(e) {
     for(var i=0; i<data.length; i+=1) {
         params[data[i].name]=data[i].value;
     }
-    console.log(params);
     $('div#shortenlinks').load('/', params, function() {
         SCK.switchtab($('div#shortenlinks'));
     });
