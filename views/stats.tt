@@ -8,8 +8,8 @@
         </div>
         <div class="span-23 last">
             <label for="shorturl_r" class="span-2">Short URL</label>
-            <input type="text" name="shorturl_r" class="text readonly" value="<% shorturl %>"/>
-            <button href="<% shorturl %>" target="_blank" class="last">Go &gt;&gt;</button>
+            <input type="text" name="shorturl_r" class="text readonly" value="<% short_url %>"/>
+            <button href="<% short_url %>" target="_blank" class="last">Go &gt;&gt;</button>
         </div>
         <div class="span-23 last">
             <label for="url_r_created_at" class="span-2">Created at</label>
@@ -30,6 +30,6 @@
     </fieldset>
 </form>
 
-<% IF error %><div class="error"><% error %></div><% END %>
-<% IF notice %><div class="notice"><% notice %></div><% END %>
+<% IF error_message %><div class="error"><% error_message %></div><% END %>
+<% IF notice_message %><div class="notice"><% notice_message %></div><% END %>
 

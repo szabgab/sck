@@ -10,26 +10,28 @@ App::Error convert throw messages from SCK into a readable message for visitor
 
 use strict;
 use warnings;
+use 5.012;
 
 #Error message known
 my $_error_msg = {
-    "NO WAY TO SHORTEN" => "Impossible to shorten this URL",
-    "BAD URL" =>
-      "Your url is bad. It has to start with 'http://' or 'https://'.",
-    "TOO MANY TRIES" => "Too many tries (> %d). Try again.",
-    "THIS KEY DOESNT EXIST" => "This tinyurl doesn't exist"
+    'NO WAY TO SHORTEN' => qq{Impossible to shorten this URL},
+    'BAD URL' =>
+        qq{Your url is bad. It has to start with 'http://' or 'https://'.},
+    'TOO MANY TRIES'        => qq{Too many tries (> %d). Try again.},
+    'THIS KEY DOESNT EXIST' => qq{This tinyurl doesn't exist}
 };
 
 =method get_error_message_from
 
 Return the readable message from SCK error code
 
+    App::Error->get_error_message_from($croak_message, $max_tries);
+
 =cut
 
 sub get_error_message_from {
-    my $self        = shift;
-    my $error_throw = shift;
-    my $max_tries   = shift || 0;
+    my ( $self, $error_throw, $max_tries ) = @_;
+    $max_tries //= 0;
 
     #extract code from error throw, try to find a match, or throw the error
     my ($error_code) = $error_throw =~ m!^SCK\[(.*?)\]!x;
