@@ -1,18 +1,6 @@
 package Celogeek::SCK;
 
-# ABSTRACT: Celogeek SCK Core
-
-=head1 DESCRIPTION
-
-Celogeek SCK is a service to shorten your URL
-
-=cut
-
-=head1 AUTHORS
-
- * Geistteufel <geistteufel@yahoo.fr>
-
-=cut
+# ABSTRACT: Celogeek::SCK Core - a service to shorten your URL
 
 use strict;
 use warnings;
@@ -73,9 +61,9 @@ sub generate {
     my $ok;
     while ( $self->max_generated_times > $self->generated_times ) {
         $key = rand_data_string( $letters, \@kb );
-        $key =~ s/\/+/\//xg;
-        $key =~ s/\/$//x;
-        $key =~ s/^\///x;
+        $key =~ s!/+!/!xg;
+        $key =~ s!/$!!x;
+        $key =~ s!^/!!x;
         next if $key eq '';    #one letter, only a /
         $self->generated_times( $self->generated_times + 1 );
         unless ( $self->redis->exists( $self->_path_key($key) ) ) {

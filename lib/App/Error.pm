@@ -12,6 +12,8 @@ use strict;
 use warnings;
 use 5.012;
 
+use Carp;
+
 #Error message known
 my $_error_msg = {
     'NO WAY TO SHORTEN' => qq{Impossible to shorten this URL},
@@ -34,7 +36,7 @@ sub get_error_message_from {
     $max_tries //= 0;
 
     #extract code from error throw, try to find a match, or throw the error
-    my ($error_code) = $error_throw =~ m!^SCK\[(.*?)\]!x;
+    my ($error_code) = $error_throw =~ m!^SCK:\[(.*?)\]!x;
     if ( defined $error_code && exists $_error_msg->{$error_code} ) {
         return sprintf( $_error_msg->{$error_code}, $max_tries );
     }
