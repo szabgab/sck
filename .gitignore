@@ -1,9 +1,11 @@
 *.swp
 config.yml
 logs/*.log
-urls/
-*.old
 db/logs/
-Makefile
 .DS_Store
+*.old
 *.bak
+*.tdy
+t/db/*.rdb
+.build
+Celogeek-SCK-*

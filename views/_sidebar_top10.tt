@@ -3,13 +3,13 @@
 
     <div class="box">
         <ol>
-            <% FOREACH data = top10 %>
+            <% FOREACH top10_member = top10_members %>
             <div class="quiet">
                 <li>
-                <a href="<% request.base %><% data.path %>" target="_blank" class="quiet" title="<% data.alt %>">
-                    <% FILTER truncate(50, "&hellip;") %><% data.title %><% END %>
-                    <% IF data.missing_title %>
-                    <img src="<% request.base %><% data.path %>?mt=1"/>
+                <a href="<% request.base %><% top10_member.path %>" target="_blank" class="quiet" title="<% top10_member.alt %>">
+                    <% FILTER truncate(50, "&hellip;") %><% top10_member.title %><% END %>
+                    <% IF top10_member.missing_title %>
+                    <img src="<% request.base %><% top10_member.path %>?mt=1"/>
                     <% END %>
                 </a>
                 </li>

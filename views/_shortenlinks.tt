@@ -8,13 +8,13 @@
         </div>
         <div class="span-13 last">
             <label for="shorturl_r" class="span-2">Short URL</label>
-            <input type="text" name="shorturl_r" class="text readonly" value="<% shorturl %>"/>
-            <button href="<% shorturl %>" target="_blank" class="last">Go &gt;&gt;</button>
+            <input type="text" name="shorturl_r" class="text readonly" value="<% short_url %>"/>
+            <button href="<% short_url %>" target="_blank" class="last">Go &gt;&gt;</button>
         </div>
         <div class="span-13 last">
             <label for="statsurl_r" class="span-2">Stats URL</label>
-            <input type="text" name="statsurl_r" class="text readonly" value="<% statsurl %>"/>
-            <button href="<% statsurl %>" target="_blank" class="last">Go &gt;&gt;</button>
+            <input type="text" name="statsurl_r" class="text readonly" value="<% stats_url %>"/>
+            <button href="<% stats_url %>" target="_blank" class="last">Go &gt;&gt;</button>
         </div>
         <div class="span-13 last">
             <% IF bookmarklet %>
@@ -26,5 +26,5 @@
     </fieldset>
 </form>
 
-<% IF error %><div class="error"><% error %></div><% END %>
-<% IF notice %><div class="notice"><% notice %></div><% END %>
+<% IF error_message %><div class="error"><% error_message %></div><% END %>
+<% IF notice_message %><div class="notice"><% notice_message %></div><% END %>
