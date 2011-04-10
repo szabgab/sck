@@ -8,7 +8,7 @@ package Celogeek::SCK;
 
     my $sck = Celogeek::SCK->new(redis => redis, max_generated_times => 5, max_letters => 10);
     my $short_url = $sck->shorten('http://www.montest.com');
-    my $long_url = $sck->longen($short_url);
+    my $long_url = $sck->enlarge($short_url);
 
 =cut
 
@@ -146,13 +146,13 @@ sub shorten {
     }
 }
 
-=method longen
+=method enlarge
 
 Try to get the long url from a key
 
 =cut
 
-sub longen {
+sub enlarge {
     my ( $self, $key, %opts ) = @_;
     my $clicks      = $opts{clicks}      // 0;
     my $clicks_uniq = $opts{clicks_uniq} // 0;

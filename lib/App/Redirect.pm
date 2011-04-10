@@ -22,7 +22,7 @@ get qr{^/(.+)$}x => sub {
 
     #try enlarge key if exist
     my ($key) = splat();
-    my $longurl = vars->{sck}->longen($key);
+    my $longurl = vars->{sck}->enlarge($key);
     $longurl = vars->{base} if $longurl eq '';
 
     return $longurl;
@@ -45,7 +45,7 @@ get qr{^/(.+)$}x => sub {
     }
 
     #take long url and redirect
-    my $longurl = vars->{sck}->longen( 
+    my $longurl = vars->{sck}->enlarge( 
         $key, 
         clicks => $click, 
         clicks_uniq => $click_uniq 

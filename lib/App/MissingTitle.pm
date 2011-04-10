@@ -25,7 +25,7 @@ get qr{^/(.+)$}x => sub {
 
     my ($key) = splat();
 
-    my $longurl = vars->{sck}->longen($key);
+    my $longurl = vars->{sck}->enlarge($key);
     if ( $longurl ne '' ) {
         vars->{sck}->missing_title($longurl);
     }
