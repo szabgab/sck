@@ -16,6 +16,8 @@ Celogeek SCK is a service to shorten your URL
 
 use strict;
 use warnings;
+use 5.012;
+
 use Moose;
 use Data::Rand qw/rand_data_string/;
 use Digest::SHA1 qw/sha1_hex/;

@@ -1,4 +1,8 @@
 #!/usr/bin/env perl
+package AppLauncher;
+
+# ABSTRACT: AppLauncher load all App in the right order
+
 use Dancer;
 
 #Main : define common shared vars
@@ -17,3 +21,5 @@ use App::MissingTitle;
 #This part should be execute after all overs
 use App::Redirect;
 dance;
+
+1;
