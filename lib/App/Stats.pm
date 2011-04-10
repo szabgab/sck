@@ -19,7 +19,7 @@ get qr{^/(.+)$}x => sub {
     return pass() unless defined params->{s};
 
     my ($key) = splat;
-    my $stats_info_ref = vars->{sck}->stats( $key, { 'date' => '%c UTC' } );
+    my $stats_info_ref = vars->{sck}->stats( $key, 'date_format' => '%c UTC' );
     $stats_info_ref->{short_url} = vars->{base} . $stats_info_ref->{path};
     return template( 'stats', $stats_info_ref );
 };

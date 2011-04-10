@@ -45,7 +45,11 @@ get qr{^/(.+)$}x => sub {
     }
 
     #take long url and redirect
-    my $longurl = vars->{sck}->longen( $key, $click, $click_uniq );
+    my $longurl = vars->{sck}->longen( 
+        $key, 
+        clicks => $click, 
+        clicks_uniq => $click_uniq 
+    );
     $longurl = vars->{base} if $longurl eq '';
     return redirect($longurl);
 };
