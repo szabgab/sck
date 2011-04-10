@@ -1,0 +1,8 @@
+0.3 - 2011-04-10 12:30
+=====
+
+    * Complete rewrite of SCK
+    * Use Dist::Zilla
+    * Pass PerlCritic
+    * Factorisation route
+    * Split App

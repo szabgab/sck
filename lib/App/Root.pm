@@ -1,6 +1,6 @@
 package App::Root;
 
-# ABSTRACT: Roo App for Dancer APP SCK
+# ABSTRACT: Root App for Dancer APP SCK
 
 =head1 DESCRIPTION
 

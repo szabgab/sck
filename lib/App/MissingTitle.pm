@@ -4,13 +4,11 @@ package App::MissingTitle;
 
 =head1 DESCRIPTION
 
-Fetch missing title for a specific url, save it, and redirect to a transparent gif
+Fetch missing title for a specific url, save it, and redirect to a transparent picture
 
 =cut
 
 =head1 SYNOPSIS
-
-Fetch the title for key "u" :
 
     <img src="http://sck.to/u?mt=1" />
 
