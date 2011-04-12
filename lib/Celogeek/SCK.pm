@@ -23,7 +23,6 @@ use File::Basename;
 use File::Path;
 use File::Spec;
 use Carp;
-use WWW::GetPageTitle;
 use DateTime;
 use DateTime::Format::DateParse;
 
