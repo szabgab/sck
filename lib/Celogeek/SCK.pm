@@ -63,7 +63,7 @@ Initialize the SCK core.
 sub BUILD {
     my ($self) = @_;
     $self->redis->incr('c:min_letters')
-      unless $self->redis->exists('c:min_letters');
+        unless $self->redis->exists('c:min_letters');
     return;
 }
 
@@ -132,8 +132,7 @@ sub shorten {
         my $short = $self->generate();
         $self->_save(
             $hash_key,
-            {
-                url              => $url,
+            {   url              => $url,
                 path             => $short,
                 clicks           => 0,
                 clicks_uniq      => 0,
@@ -157,7 +156,7 @@ sub enlarge {
     my $clicks      = $opts{clicks}      // 0;
     my $clicks_uniq = $opts{clicks_uniq} // 0;
     croak "SCK:[THIS KEY DOESNT EXIST]"
-      unless ( $self->redis->exists( $self->_path_key($key) ) );
+        unless ( $self->redis->exists( $self->_path_key($key) ) );
 
     my $hash_key = $self->redis->get( $self->_path_key($key) );
 
@@ -193,9 +192,8 @@ sub stats {
         my $data = $self->_get( $self->redis->get( $self->_path_key($key) ) );
         foreach my $d (qw/created_at last_accessed_at/) {
             if ( $data->{$d} ) {
-                $data->{$d} =
-                  $self->_datetime( $data->{$d} )
-                  ->strftime( $opts{date_format} );
+                $data->{$d} = $self->_datetime( $data->{$d} )
+                    ->strftime( $opts{date_format} );
             }
         }
         return $data;
@@ -214,12 +212,13 @@ Return the top10 of most clicks links of the week. Only one click per day per us
 sub top10 {
     my ($self) = @_;
 
-    my @members_with_score =
-      $self->redis->zrevrange( 's:top10', 0, 9, 'WITHSCORES' );
+    my @members_with_score
+        = $self->redis->zrevrange( 's:top10', 0, 9, 'WITHSCORES' );
     my @top10_data = ();
 
-    for ( my $i = 0 ; $i < @members_with_score ; $i += 2 ) {
-        my ( $member_key, $member_score ) = @members_with_score[ $i .. $i + 1 ];
+    for ( my $i = 0; $i < @members_with_score; $i += 2 ) {
+        my ( $member_key, $member_score )
+            = @members_with_score[ $i .. $i + 1 ];
 
         #fetch data
         my $data = { score => $member_score };
@@ -326,10 +325,10 @@ sub _save {
 sub _get {
     my $self     = shift;
     my $hash_key = shift;
-    my %data =
-        $self->redis->exists($hash_key)
-      ? $self->redis->hgetall($hash_key)
-      : ();
+    my %data
+        = $self->redis->exists($hash_key)
+        ? $self->redis->hgetall($hash_key)
+        : ();
     return \%data;
 }
 

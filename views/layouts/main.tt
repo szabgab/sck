@@ -40,7 +40,7 @@
         <div class="span-<% span_size %> last">
             <% content %>
         </div>
-        <div class="span-<% span_size %> last">&nbsp;</div>
+        <div class="span-<% span_size %> last" style="text-align: right">v<% version %>&nbsp;</div>
         <hr />
     </div>
 </body>
