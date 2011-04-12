@@ -1,3 +1,9 @@
+0.7 - 2011-04-12 20:00
+=====
+
+    * Remove missing title method to async fetch title
+      This will be replace by a content analyzer
+
 0.6 - 2011-04-12 19:30
 =====
 

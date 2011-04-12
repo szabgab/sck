@@ -23,7 +23,6 @@ use File::Basename;
 use File::Path;
 use File::Spec;
 use Carp;
-use WWW::GetPageTitle;
 use DateTime;
 use DateTime::Format::DateParse;
 
@@ -222,32 +221,19 @@ sub top10 {
 
         #fetch data
         my $data = { score => $member_score };
-        $data->{$_} = $self->redis->hget( $member_key, $_ ) for qw/url path/;
+        $data->{$_} = $self->redis->hget( $member_key, $_ ) for qw/url path title/;
 
-        my $title_key = $self->_title_key( $data->{url} );
-        $data->{title} = $self->redis->get($title_key);
         $data->{alt}   = "";
-
-        my $hash_key = $self->_hash_key( $data->{url} );
 
         # too many try, never try again
         if ( $data->{title} ) {
-
             #if title exist, use it
             if ( $data->{title} ne $data->{url} ) {
                 $data->{alt} = $data->{title} . " - ";
             }
         }
         else {
-
-            #try to fetch title in asynchrone mode
             $data->{title} = $data->{url};
-            if ( $self->redis->hget( $hash_key, 'missing_title_tries' )
-                // 0 < 5 )
-            {
-                $self->redis->hincrby( $hash_key, 'missing_title_tries', 1 );
-                $data->{missing_title} = 1;
-            }
         }
 
         #set alt
@@ -256,33 +242,6 @@ sub top10 {
         push @top10_data, $data;
     }
     return \@top10_data;
-}
-
-=method missing_title
-
-Fetch missing title for a specific url
-
-=cut
-
-sub missing_title {
-    my $self      = shift;
-    my $url       = shift;
-    my $hash_key  = $self->_hash_key($url);
-    my $title_key = $self->_title_key($url);
-    my $expire    = 24 * 3600 * 3;             #3 day
-    unless ( $self->redis->exists($title_key) ) {
-
-        #set url as title to prevent multiset
-        #lock 15s to prevent multicall to the same dest
-        #if this part crash, it will be allow to retry in a short time
-        $self->redis->setex( $title_key, 60, $url );
-        my $gt = WWW::GetPageTitle->new;
-        if ( $gt->get_title($url) ) {
-            $self->redis->setex( $title_key, $expire, $gt->title );
-            $self->redis->hdel( $hash_key, 'missing_title_tries' );
-        }
-    }
-    return;
 }
 
 #return a formated DateTime from DateTime or String
@@ -352,13 +311,6 @@ sub _hash_key {
     my $self = shift;
     my $url  = shift;
     return $self->_redis_key( "h", $url );
-}
-
-#key for title (title of url in top10), start with t:, expire
-sub _title_key {
-    my $self = shift;
-    my $url  = shift;
-    return $self->_redis_key( "t", $url );
 }
 
 no Moose;
