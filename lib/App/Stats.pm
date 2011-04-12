@@ -19,8 +19,10 @@ get qr{^/(.+)$}x => sub {
     return pass() unless defined params->{s};
 
     my ($key) = splat;
-    my $stats_info_ref = vars->{sck}->stats( $key, 'date_format' => '%c UTC' );
+    my $stats_info_ref
+        = vars->{sck}->stats( $key, 'date_format' => '%c UTC' );
     $stats_info_ref->{short_url} = vars->{base} . $stats_info_ref->{path};
+    $stats_info_ref->{version}   = $Celogeek::SCK::VERSION;
     return template( 'stats', $stats_info_ref );
 };
 

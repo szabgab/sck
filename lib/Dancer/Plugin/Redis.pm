@@ -24,9 +24,8 @@ register redis => sub {
     my $s = _get_settings($name);
 
     if ( $handle->{dbh} ) {
-        if (
-            time - $handle->{last_connection_check} <
-            $s->{connection_check_threshold} )
+        if (time - $handle->{last_connection_check}
+            < $s->{connection_check_threshold} )
         {
             return $handle->{dbh};
         }
@@ -37,7 +36,7 @@ register redis => sub {
             }
             else {
                 Dancer::Logger::debug(
-                    "Redis connection went away, reconnecting" );
+                    "Redis connection went away, reconnecting");
                 return $handle->{dbh} = _get_connection($s);
             }
         }
@@ -47,7 +46,7 @@ register redis => sub {
         # Get a new connection
         if ( !$s ) {
             Dancer::Logger::error(
-                "No DB settings named $name, so cannot connect" );
+                "No DB settings named $name, so cannot connect");
             return;
         }
         if ( $handle->{dbh} = _get_connection($s) ) {
@@ -72,7 +71,7 @@ sub _get_connection {
     );
 
     if ( !$r ) {
-        Dancer::Logger::error( "Redis connection failed - " );
+        Dancer::Logger::error("Redis connection failed - ");
     }
 
     return $r;
@@ -85,8 +84,8 @@ sub _check_connection {
     my $result;
 
     # Redis.pm die when the connection is closed
-    try { 
-        $result = $dbh->ping; 
+    try {
+        $result = $dbh->ping;
         if ( $result eq "PONG" ) {
             return 1;
         }
@@ -118,7 +117,7 @@ sub _get_settings {
             # OK, didn't match anything
             Dancer::Logger::error(
                 "Asked for a database handle named '$name' but no matching  "
-                  . "connection details found in config" );
+                    . "connection details found in config" );
         }
     }
 

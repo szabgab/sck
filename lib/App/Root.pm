@@ -28,6 +28,7 @@ any [ 'get', 'post' ] => '/' => sub {
         return vars->{base} . vars->{sck}->shorten( params->{url} );
     }
     catch {
+
         #if any error on getting short url, return long
         return params->{url};
     };
@@ -44,21 +45,21 @@ any [ 'get', 'post' ] => '/' => sub {
         push @title, vars->{base} . vars->{sck}->shorten( params->{url} );
     }
     catch {
+
         #push long title if any error occur
         push @title, params->{url};
 
     };
 
     return redirect( "http://twitter.com/?status="
-          . uri_escape_utf8( join( ' - ', @title ) ) );
+            . uri_escape_utf8( join( ' - ', @title ) ) );
 };
 
 #normal call with url
 any [ 'get', 'post' ] => '/' => sub {
     return pass() unless defined params->{url};
 
-    my (
-        $short_url,      $stats_url, $error_message,
+    my ($short_url,      $stats_url, $error_message,
         $notice_message, $top10_members
     );
 
@@ -66,16 +67,17 @@ any [ 'get', 'post' ] => '/' => sub {
         $short_url = vars->{base} . vars->{sck}->shorten( params->{url} );
         $stats_url = $short_url . "?s=1";
         if ( vars->{sck}->generated_times ) {
-            $notice_message =
-              "Generated after " . vars->{sck}->generated_times . " tries.";
+            $notice_message
+                = "Generated after "
+                . vars->{sck}->generated_times
+                . " tries.";
         }
         else {
             $notice_message = "Already registered in database";
         }
     }
     catch {
-        $error_message =
-          App::Error->get_error_message_from( $_,
+        $error_message = App::Error->get_error_message_from( $_,
             { MAX_GENERATED_TIMES => vars->{sck}->max_generated_times } );
     };
 
@@ -101,14 +103,14 @@ any [ 'get', 'post' ] => '/' => sub {
 
     return template(
         $tpl,
-        {
-            url            => params->{url},
+        {   url            => params->{url},
             short_url      => $short_url,
             stats_url      => $stats_url,
             top10_members  => $top10_members,
             notice_message => $notice_message,
             error_message  => $error_message,
             bookmarklet    => params->{b},
+            version        => $Celogeek::SCK::VERSION,
         },
         $opt
     );
@@ -118,9 +120,9 @@ any [ 'get', 'post' ] => '/' => sub {
 get '/' => sub {
     return template(
         "index",
-        {
-            top10_members         => vars->{sck}->top10(),
+        {   top10_members         => vars->{sck}->top10(),
             bookmarklet_installed => params->{ib},
+            version               => $Celogeek::SCK::VERSION,
         }
     );
 };
