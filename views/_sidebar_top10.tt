@@ -8,9 +8,6 @@
                 <li>
                 <a href="<% request.base %><% top10_member.path %>" target="_blank" class="quiet" title="<% top10_member.alt %>">
                     <% FILTER truncate(50, "&hellip;") %><% top10_member.title %><% END %>
-                    <% IF top10_member.missing_title %>
-                    <img src="<% request.base %><% top10_member.path %>?mt=1"/>
-                    <% END %>
                 </a>
                 </li>
             </div>
