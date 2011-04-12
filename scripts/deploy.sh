@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 set -x
 set -e
@@ -24,3 +24,4 @@ then
 else
     cp "$RPATH"/current/config.yml.example "$RPATH"/current/config.yml
 fi
+
