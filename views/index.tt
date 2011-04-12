@@ -15,6 +15,9 @@
         <% END %>
         <% INCLUDE _bookmarklettab.tt %>
     </div>
+    <div id="changelog" class="tabclosed">
+        <PRE><% INCLUDE _changelog.tt %></PRE>
+    </div>
 </div>
 <div class="span-9 last">
     <% INCLUDE _sidebar.tt %>
