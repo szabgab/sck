@@ -17,6 +17,11 @@ use warnings;
 use 5.012;
 
 use Moose;
+
+use Celogeek::SCK::Cleaner;
+my $_cleaner = Celogeek::SCK::Cleaner->new();
+use Celogeek::SCK::Analyzer;
+
 use Data::Rand qw/rand_data_string/;
 use Digest::SHA1 qw/sha1_hex/;
 use File::Basename;
@@ -25,6 +30,7 @@ use File::Spec;
 use Carp;
 use DateTime;
 use DateTime::Format::DateParse;
+use Try::Tiny;
 
 has 'redis' => (
     'is'       => 'rw',
@@ -51,6 +57,11 @@ has 'max_letters' => (
     'isa'      => 'Int',
     'required' => 1,
     'default'  => 1,
+);
+
+has 'status' => (
+    'is' => 'rw',
+    'isa' => 'Str',
 );
 
 =method BUILD
@@ -117,7 +128,11 @@ Return an existing short key for long url, or try to generate a new one
 
 sub shorten {
     my ( $self, $url ) = @_;
-    croak "SCK:[BAD URL]" unless $url =~ m/^https?:\/\//x;
+    try {
+        croak "SCK:[BAD URL]" unless $_cleaner->is_valid_uri(uri => $url);
+    } catch {
+        croak "SCK:[BAD URL]";
+    };
 
     #look in redis db
     my $hash_key = $self->_hash_key($url);
@@ -125,6 +140,20 @@ sub shorten {
         return $self->redis->hget( $hash_key, "path" );
     }
     else {
+        #check url
+        my $analyzer = Celogeek::SCK::Analyzer->new(uri => $url, method => 'header');
+        my $header = $analyzer->header();
+        $self->status($header->{status});
+        
+        #porn link
+        if ($self->status() eq 'PORN/ILLEGAL') {
+            croak "SCK:[PORN/ILLEGAL]";
+        }
+
+        #status is not 200 OK, unreachable
+        if ($self->status() ne '200 OK') {
+            croak "SCK:[UNREACHABLE HOST]";
+        }
 
         #generate a new one
         $self->generated_times(0);
