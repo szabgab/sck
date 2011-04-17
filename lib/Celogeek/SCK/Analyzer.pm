@@ -31,7 +31,7 @@ $Celogeek::SCK::Analyzer::ANALYZER_VERSION=1;
 my $_resolver = Net::DNS::Resolver->new;
 my $_resolver_bad_ip = '67.215.65.130';
 #set opendns server
-$_resolver->nameservers('209.67.222.222', '208.67.220.220');
+$_resolver->nameservers('208.67.222.222', '208.67.220.220');
 
 #init UA
 
