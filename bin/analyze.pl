@@ -37,7 +37,7 @@ foreach my $key(redis->keys("h:*")) {
     }
 
     #set analyzer version if status OK
-    if ($header->{status} eq '200 OK') {
+    if ($header->{status} eq '200 OK' || $header->{status} eq 'PORN/ILLEGAL') {
         redis->hset($key, 'analyzer', $Celogeek::SCK::Analyzer::ANALYZER_VERSION);
     }
 

@@ -22,8 +22,16 @@ use HTML::ContentExtractor;
 use Regexp::Common qw(whitespace);
 use Config::YAML;
 
+use Net::DNS;
+
 #set analyzer version, permit to rescan only old or new link
 $Celogeek::SCK::Analyzer::ANALYZER_VERSION=1;
+
+#check dns
+my $_resolver = Net::DNS::Resolver->new;
+my $_resolver_bad_ip = '67.215.65.130';
+#set opendns server
+$_resolver->nameservers('209.67.222.222', '208.67.220.220');
 
 #init UA
 
@@ -125,7 +133,7 @@ sub _extract_header {
 
     $self->header(
         {
-            status       => $request->status_line,
+            status       => $self->_extract_status($request),
             content_type => $content_type,
             encoding     => uc($encoding),
         }
@@ -148,6 +156,19 @@ sub _extract_content {
     );
 
     return;
+}
+
+sub _extract_status {
+    my ( $self, $request ) = @_;
+    if ($request->status_line eq '200 OK') {
+        #check porno/illegal
+        my $dns_message = $_resolver->search($request->base->host);
+        foreach my $rr($dns_message->answer) {
+            next unless $rr->type eq 'A';
+            return 'PORN/ILLEGAL' if $rr->address eq $_resolver_bad_ip;
+        }
+    }
+    return $request->status_line;
 }
 
 sub _extract_title {
