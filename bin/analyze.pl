@@ -26,15 +26,9 @@ foreach my $key(redis->keys("h:*")) {
 
     my $analyzer = Celogeek::SCK::Analyzer->new(uri => $url, method => 'full');
 
-    #check if it's an SCK key
-    unless ($analyzer->is_valid_uri()) {
-        say "   SCK URI, REMOVING : $url";
-        redis->del($key);
-        next;
-    }
-
-    #check if status is 200 (only reachable link is ok)
+   #check if status is 200 (only reachable link is ok)
     my $header = $analyzer->header();
+    next unless $header;
     say "   Status : ",$header->{status};
     say "   Content-Type : ",$header->{content_type};
     say "   Encoding : ",$header->{encoding};
@@ -56,14 +50,4 @@ foreach my $key(redis->keys("h:*")) {
 };
 
 say "";
-say "====";
-say "";
-say "Cleaning pkey";
-foreach my $pkey(redis->keys("p:*")) {
-    my $key = redis->get($pkey);
-    unless (redis->exists($key)) {
-        say "    Removing $pkey";
-        redis->del($pkey);
-    }
-}
 say "Done";

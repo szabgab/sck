@@ -10,7 +10,6 @@ use Data::Dumper;
 use Carp;
 
 use Moose;
-use MooseX::Params::Validate;
 use MooseX::Types::URI qw(Uri);
 
 use Moose::Util::TypeConstraints;
@@ -57,19 +56,6 @@ has uri => (
     required => 1,
 );
 
-=attr is_valid_uri
-
-Status of URI, need to match some spec
-
-=cut
-
-has is_valid_uri => (
-    isa      => "Bool",
-    is       => "rw",
-    required => 1,
-    default  => 0,
-);
-
 =attr header
 
 Content all usefull headers of uri
@@ -112,9 +98,6 @@ has method => (
 sub BUILD {
     my ($self) = @_;
 
-    $self->_check_uri();
-    return unless $self->is_valid_uri();
-
     {
         my $request = $_ua_header->get( $self->uri );
         $self->_extract_header($request);
@@ -130,26 +113,6 @@ sub BUILD {
     }
 
     return;
-}
-
-#Check if URI is valid
-sub _check_uri {
-    my ($self) = @_;
-
-    #no short uri
-    unless (
-        $self->uri->host =~ m!
-        ^sck\.to$ |
-        ^susbck\.com$ |
-        ^url\.celogeek\.(fr|com)$
-        !x
-      )
-    {
-        if ( $self->uri->scheme eq 'http' || $self->uri->scheme eq 'https' ) {
-            $self->is_valid_uri(1);
-        }
-    }
-    return $self->is_valid_uri();
 }
 
 sub _extract_header {
