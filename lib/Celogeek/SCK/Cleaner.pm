@@ -22,10 +22,15 @@ has 'run' => (
     default       => 0,
 );
 
-#Check if URI is valid
+=method is_valid_uri
+
+Check if URI is valid
+
+=cut
 sub is_valid_uri {
-    my ( $self, $uri ) = validated_list(
-        \@_,
+    my ( $self, @opts ) = @_;
+    my ( $uri ) = validated_list(
+        \@opts,
         uri => {
             isa    => Uri,
             coerce => 1,

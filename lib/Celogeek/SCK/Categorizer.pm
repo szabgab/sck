@@ -9,6 +9,8 @@ use 5.012;
 use Data::Dumper;
 use Carp;
 
+use Config::YAML;
+
 #load YML and reverse
 my $_word_to_categories = {};
 {
@@ -47,3 +49,5 @@ sub get_category {
 
     return "N/A";
 }
+
+1;

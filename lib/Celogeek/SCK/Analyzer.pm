@@ -53,7 +53,7 @@ subtype 'SCK:Method' => as 'Str' => where {
 
 =attr uri
 
-URI to analyse
+URI to analyze
 
 =cut
 
@@ -66,7 +66,7 @@ has uri => (
 
 =attr header
 
-Content all usefull headers of uri
+Content all useful headers of uri
 
 =cut
 
@@ -102,7 +102,19 @@ has method => (
     default  => 'header',
 );
 
+=method BUILD
 
+Initialize the analyzer.
+
+header only :
+
+    my $analyzer = Celogeek::SCK::Analyzer->new(uri => $url, method => 'header');
+
+full content :
+
+    my $analyzer = Celogeek::SCK::Analyzer->new(uri => $url, method => 'full');
+
+=cut
 sub BUILD {
     my ($self) = @_;
 
