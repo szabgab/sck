@@ -60,7 +60,7 @@ has 'max_letters' => (
 );
 
 has 'status' => (
-    'is' => 'rw',
+    'is'  => 'rw',
     'isa' => 'Str',
 );
 
@@ -129,8 +129,9 @@ Return an existing short key for long url, or try to generate a new one
 sub shorten {
     my ( $self, $url ) = @_;
     try {
-        croak "SCK:[BAD URL]" unless $_cleaner->is_valid_uri(uri => $url);
-    } catch {
+        croak "SCK:[BAD URL]" unless $_cleaner->is_valid_uri( uri => $url );
+    }
+    catch {
         croak "SCK:[BAD URL]";
     };
 
@@ -140,18 +141,20 @@ sub shorten {
         return $self->redis->hget( $hash_key, "path" );
     }
     else {
+
         #check url
-        my $analyzer = Celogeek::SCK::Analyzer->new(uri => $url, method => 'header');
+        my $analyzer
+            = Celogeek::SCK::Analyzer->new( uri => $url, method => 'header' );
         my $header = $analyzer->header();
-        $self->status($header->{status});
-        
+        $self->status( $header->{status} );
+
         #porn link
-        if ($self->status() eq 'PORN/ILLEGAL') {
+        if ( $self->status() eq 'PORN/ILLEGAL' ) {
             croak "SCK:[PORN/ILLEGAL]";
         }
 
         #status is not 200 OK, unreachable
-        if ($self->status() ne '200 OK') {
+        if ( $self->status() ne '200 OK' ) {
             croak "SCK:[UNREACHABLE HOST]";
         }
 
@@ -250,12 +253,14 @@ sub top10 {
 
         #fetch data
         my $data = { score => $member_score };
-        $data->{$_} = $self->redis->hget( $member_key, $_ ) for qw/url path title/;
+        $data->{$_} = $self->redis->hget( $member_key, $_ )
+            for qw/url path title/;
 
-        $data->{alt}   = "";
+        $data->{alt} = "";
 
         # too many try, never try again
         if ( $data->{title} ) {
+
             #if title exist, use it
             if ( $data->{title} ne $data->{url} ) {
                 $data->{alt} = $data->{title} . " - ";

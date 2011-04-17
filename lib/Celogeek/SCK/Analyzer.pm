@@ -25,13 +25,14 @@ use Config::YAML;
 use Net::DNS;
 
 #set analyzer version, permit to rescan only old or new link
-$Celogeek::SCK::Analyzer::ANALYZER_VERSION=1;
+$Celogeek::SCK::Analyzer::ANALYZER_VERSION = 1;
 
 #check dns
-my $_resolver = Net::DNS::Resolver->new;
+my $_resolver        = Net::DNS::Resolver->new;
 my $_resolver_bad_ip = '67.215.65.130';
+
 #set opendns server
-$_resolver->nameservers('208.67.222.222', '208.67.220.220');
+$_resolver->nameservers( '208.67.222.222', '208.67.220.220' );
 
 #init UA
 
@@ -48,7 +49,7 @@ $_ua_content->timeout(30);
 
 subtype 'SCK:Method' => as 'Str' => where {
     $_ eq 'header'
-      || $_ eq 'full';
+        || $_ eq 'full';
 };
 
 =attr uri
@@ -115,6 +116,7 @@ full content :
     my $analyzer = Celogeek::SCK::Analyzer->new(uri => $url, method => 'full');
 
 =cut
+
 sub BUILD {
     my ($self) = @_;
 
@@ -138,14 +140,13 @@ sub BUILD {
 sub _extract_header {
     my ( $self, $request ) = @_;
 
-    my ( $content_type, $encoding ) =
-      split( ';', $request->header("Content-Type") );
+    my ( $content_type, $encoding )
+        = split( ';', $request->header("Content-Type") );
     $encoding //= "UTF-8";
     $encoding =~ s!charset=!!x;
 
     $self->header(
-        {
-            status       => $self->_extract_status($request),
+        {   status       => $self->_extract_status($request),
             content_type => $content_type,
             encoding     => uc($encoding),
         }
@@ -161,8 +162,7 @@ sub _extract_content {
     $self->content( {} );
 
     $self->content(
-        {
-            title      => $self->_extract_title($request),
+        {   title      => $self->_extract_title($request),
             word_score => $self->_extract_word_score($request),
         }
     );
@@ -172,10 +172,11 @@ sub _extract_content {
 
 sub _extract_status {
     my ( $self, $request ) = @_;
-    if ($request->status_line eq '200 OK') {
+    if ( $request->status_line eq '200 OK' ) {
+
         #check porno/illegal
-        my $dns_message = $_resolver->search($request->base->host);
-        foreach my $rr($dns_message->answer) {
+        my $dns_message = $_resolver->search( $request->base->host );
+        foreach my $rr ( $dns_message->answer ) {
             next unless $rr->type eq 'A';
             return 'PORN/ILLEGAL' if $rr->address eq $_resolver_bad_ip;
         }

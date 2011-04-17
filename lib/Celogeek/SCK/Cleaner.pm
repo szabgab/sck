@@ -27,9 +27,10 @@ has 'run' => (
 Check if URI is valid
 
 =cut
+
 sub is_valid_uri {
     my ( $self, @opts ) = @_;
-    my ( $uri ) = validated_list(
+    my ($uri) = validated_list(
         \@opts,
         uri => {
             isa    => Uri,
@@ -44,7 +45,7 @@ sub is_valid_uri {
         ^susbck\.com$ |
         ^url\.celogeek\.(fr|com)$
         !x
-      )
+        )
     {
         if ( $uri->scheme eq 'http' || $uri->scheme eq 'https' ) {
             return 1;

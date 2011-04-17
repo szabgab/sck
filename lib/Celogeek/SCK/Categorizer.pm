@@ -14,12 +14,12 @@ use Config::YAML;
 #load YML and reverse
 my $_word_to_categories = {};
 {
-    my $config = Config::YAML->new(config => 'category.yml');
-    while(my ($key, $value) = each %$config) {
-        next if substr($key, 0, 1) eq '_';
-        foreach my $word(@$value) {
+    my $config = Config::YAML->new( config => 'category.yml' );
+    while ( my ( $key, $value ) = each %$config ) {
+        next if substr( $key, 0, 1 ) eq '_';
+        foreach my $word (@$value) {
             $_word_to_categories->{$word} //= [];
-            push @{$_word_to_categories->{$word}}, $key;
+            push @{ $_word_to_categories->{$word} }, $key;
         }
     }
 }
@@ -29,18 +29,20 @@ my $_word_to_categories = {};
 Return best category for your word_score
 
 =cut
+
 sub get_category {
-    my ($self, $word_score) = @_;
+    my ( $self, $word_score ) = @_;
     croak "Missing word_score params" unless defined $word_score;
     my %category_score = ();
 
-    while(my ($word, $score) = each %$word_score) {
-        if (defined $_word_to_categories->{$word}) {
+    while ( my ( $word, $score ) = each %$word_score ) {
+        if ( defined $_word_to_categories->{$word} ) {
             say "Found word $word";
-            foreach my $category(@{$_word_to_categories->{$word}}) {
+            foreach my $category ( @{ $_word_to_categories->{$word} } ) {
                 $category_score{$category} += $score;
             }
-        } else {
+        }
+        else {
             say "Unknown word $word";
         }
     }
