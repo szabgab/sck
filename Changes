@@ -1,8 +1,11 @@
-0.7 - 2011-04-12 20:00
+0.7 - 2011-04-17 21:00
 =====
 
     * Remove missing title method to async fetch title
       This will be replace by a content analyzer
+    * Add link check (porn/illegal) and status
+    * Add content analyzer, extract words
+    * Add categorizer
 
 0.6 - 2011-04-12 19:30
 =====
