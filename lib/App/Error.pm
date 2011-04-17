@@ -20,7 +20,9 @@ my $_error_msg = {
     'BAD URL' =>
         qq{Your url is bad. It has to start with 'http://' or 'https://'.},
     'TOO MANY TRIES'        => qq{Too many tries (> %d). Try again.},
-    'THIS KEY DOESNT EXIST' => qq{This tinyurl doesn't exist}
+    'THIS KEY DOESNT EXIST' => qq{This tinyurl doesn't exist},
+    'PORN/ILLEGAL'          => qq{Porn or illegal link are not accepted},
+    'UNREACHABLE HOST'      => qq {Can't access to this host, response is %s},
 };
 
 =method get_error_message_from
@@ -32,13 +34,26 @@ Return the readable message from SCK error code
 =cut
 
 sub get_error_message_from {
-    my ( $self, $error_throw, $max_tries ) = @_;
-    $max_tries //= 0;
+    my ( $self, $error_throw, $opts ) = @_;
 
     #extract code from error throw, try to find a match, or throw the error
     my ($error_code) = $error_throw =~ m!^SCK:\[(.*?)\]!x;
     if ( defined $error_code && exists $_error_msg->{$error_code} ) {
-        return sprintf( $_error_msg->{$error_code}, $max_tries );
+        if ( $error_code eq 'TOO MANY TRIES' ) {
+            return sprintf(
+                $_error_msg->{$error_code},
+                $opts->{MAX_GENERATED_TIMES} // 0
+            );
+        }
+        elsif ( $error_code eq 'UNREACHABLE HOST' ) {
+            return sprintf(
+                $_error_msg->{$error_code},
+                $opts->{STATUS} // "UNKNOWN"
+            );
+        }
+        else {
+            return sprintf( $_error_msg->{$error_code} );
+        }
     }
     else {
         croak $error_throw;
