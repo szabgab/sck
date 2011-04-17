@@ -1,0 +1,30 @@
+Computer/Navigator:
+    - firefox
+    - chrome
+    - explorer
+    - opera
+
+Computer/Programming/Perl:
+    - perl
+    - cpan
+    - cpanm
+
+Computer/Shortenizer:
+    - susbck
+    - sck
+    - url
+    - urls
+    - tinyurl
+    - short
+    - redirect
+
+Computer/Database:
+    - database
+    - redis
+    - mysql
+    - db2
+    - oracle
+    - postgres
+    - postgresql
+    - psql
+

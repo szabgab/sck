@@ -17,16 +17,24 @@ use Moose::Util::TypeConstraints;
 
 use LWP::UserAgent;
 use Encode;
-use HTML::Entities ();
-use HTML::ExtractMain qw(extract_mail_html);
+use HTML::Entities qw(decode_entities);
+use HTML::ContentExtractor;
 
 use Regexp::Common qw(whitespace);
+use Config::YAML;
 
+#set analyzer version, permit to rescan only old or new link
+$Celogeek::SCK::Analyzer::ANALYZER_VERSION=1;
+
+#init UA
+
+#extract header
 my $_ua_header = LWP::UserAgent->new;
 $_ua_header->agent("Mozilla");
 $_ua_header->timeout(10);
 $_ua_header->max_size(2000);
 
+#extract content
 my $_ua_content = LWP::UserAgent->new;
 $_ua_content->agent("Mozilla");
 $_ua_content->timeout(30);
@@ -100,19 +108,26 @@ has method => (
     default  => 'header',
 );
 
+
 sub BUILD {
     my ($self) = @_;
 
     $self->_check_uri();
     return unless $self->is_valid_uri();
 
-    my $request = $_ua_header->get( $self->uri );
-    $self->_extract_header($request);
+    {
+        my $request = $_ua_header->get( $self->uri );
+        $self->_extract_header($request);
+    }
 
     return if $self->method() eq 'header';
+    return unless $self->header()->{status}       eq '200 OK';
+    return unless $self->header()->{content_type} eq 'text/html';
 
-    my $request_full = $_ua_content->get( $self->uri );
-    $self->_extract_content($request);
+    {
+        my $request = $_ua_content->get( $self->uri );
+        $self->_extract_content($request);
+    }
 
     return;
 }
@@ -161,13 +176,11 @@ sub _extract_content {
 
     #reset content
     $self->content( {} );
-    return unless $self->header()->{status}       eq '200 OK';
-    return unless $self->header()->{content_type} eq 'text/html';
 
     $self->content(
         {
-            analyzer => 1,
-            title    => $self->_extract_title($request),
+            title      => $self->_extract_title($request),
+            word_score => $self->_extract_word_score($request),
         }
     );
 
@@ -177,32 +190,52 @@ sub _extract_content {
 sub _extract_title {
     my ( $self, $request ) = @_;
 
-    if (   $self->header->{status} eq '200 OK'
-        && $self->header->{content_type} eq 'text/html' )
-    {
+    #get content from html
+    my ($title) = $request->content =~ m!<title[^>]*>(.+?)</title>!six;
+    return unless defined $title;
 
-        #get content from html
-        my ($title) = $request->content =~ m!<title[^>]*>(.+?)</title>!six;
-        return unless defined $title;
+    #recode data in utf-8
 
-        #recode data in utf-8
-        Encode::from_to( $title, $self->header->{encoding}, "UTF-8" );
+    #decode in perl format
+    $title = Encode::decode( $self->header->{encoding}, $title );
 
-        #oneline html title
-        $title =~ s![\r\n]! !gx;
-        $title =~ s!\s+! !gx;
+    #decode entities
+    decode_entities($title);
 
-        #Remove white space
-        $title =~ s!$RE{ws}{crop}!!gx;
+    #encode utf8
+    $title = Encode::encode( "UTF-8", $title );
 
-        return $title;
-    }
+    #oneline html title
+    $title =~ s![\r\n]! !gx;
+    $title =~ s!\s+! !gx;
 
-    return;
+    #Remove white space
+    $title =~ s!$RE{ws}{crop}!!gx;
+
+    return $title;
 }
 
-sub _extract_words {
-    my ($self) = @_;
+sub _extract_word_score {
+    my ( $self, $request ) = @_;
+
+    my $content = $request->content;
+
+    #Encode::from_to($content, $self->header->{encoding}, "UTF-8");
+    $content = Encode::decode( $self->header->{encoding}, $content );
+
+    my $extractor = HTML::ContentExtractor->new();
+    $extractor->extract( $request->base, $content );
+
+    #extract words
+    my @words = $extractor->as_text() =~ m!(\w{2,}+)!gx;
+
+    #score it
+    my %word_score = ();
+    foreach my $word (@words) {
+        $word_score{ lc($word) }++;
+    }
+
+    return \%word_score;
 }
 
 1;
