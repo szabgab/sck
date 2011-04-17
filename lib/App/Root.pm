@@ -77,8 +77,12 @@ any [ 'get', 'post' ] => '/' => sub {
         }
     }
     catch {
-        $error_message = App::Error->get_error_message_from( $_,
-            { MAX_GENERATED_TIMES => vars->{sck}->max_generated_times } );
+        $error_message = App::Error->get_error_message_from(
+            $_,
+            {   MAX_GENERATED_TIMES => vars->{sck}->max_generated_times,
+                STATUS              => vars->{sck}->status,
+            }
+        );
     };
 
     #display the right template
