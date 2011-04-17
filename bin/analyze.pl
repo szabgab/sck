@@ -8,8 +8,7 @@ use warnings;
 use 5.012;
 use Carp;
 
-use Dancer ':syntax';
-use lib 'lib';
+use Dancer ':script';
 use Dancer::Plugin::Redis;
 use Celogeek::SCK::Analyzer;
 use JSON ();
