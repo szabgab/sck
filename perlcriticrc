@@ -1,3 +1,6 @@
 severity = 3
 
 [-Modules::RequireExplicitPackage]
+
+[Subroutines::ProtectPrivateSubs]
+allow = Encode::_utf8_on

@@ -31,6 +31,7 @@ use Carp;
 use DateTime;
 use DateTime::Format::DateParse;
 use Try::Tiny;
+use Encode;
 
 has 'redis' => (
     'is'       => 'rw',
@@ -260,6 +261,7 @@ sub top10 {
 
         # too many try, never try again
         if ( $data->{title} ) {
+            Encode::_utf8_on($data->{title});
 
             #if title exist, use it
             if ( $data->{title} ne $data->{url} ) {
