@@ -67,7 +67,8 @@ sub _get_connection {
 
     my $r = Redis->new(
         server => $s->{server},
-        debug  => $s->{debug}
+        debug  => $s->{debug},
+        encoding => $s->{encoding},
     );
 
     if ( !$r ) {
