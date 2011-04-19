@@ -16,7 +16,8 @@ use JSON ();
 foreach my $key ( redis->keys("h:*") ) {
     my ($analyzer_version) = redis->hget( $key, "analyzer" );
     next
-        if defined $analyzer_version
+        if !defined $ENV{FORCE}
+        && defined $analyzer_version
             && $analyzer_version
             == $Celogeek::SCK::Analyzer::ANALYZER_VERSION;
 
