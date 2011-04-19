@@ -169,6 +169,7 @@ should be specified as, for example:
         Redis:
             server: '127.0.0.1:6379'
             debug: 0
+            encoding: utf-8
 
 The C<connectivity-check-threshold> setting is optional, if not provided, it
 will default to 30 seconds.  If the database keyword was last called more than
