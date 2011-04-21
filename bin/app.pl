@@ -3,6 +3,10 @@
 # PODNAME: AppLauncher
 # ABSTRACT: load all App in the right order
 
+use strict;
+use warnings;
+use 5.012;
+
 use Dancer;
 
 #Main : define common shared vars

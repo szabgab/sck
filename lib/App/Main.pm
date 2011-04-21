@@ -12,6 +12,8 @@ use strict;
 use warnings;
 use 5.012;
 
+# VERSION
+
 #Initialise dancer app
 use Dancer ':syntax';
 use Dancer::Plugin::Redis;
