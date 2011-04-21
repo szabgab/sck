@@ -12,6 +12,8 @@ use strict;
 use warnings;
 use 5.012;
 
+# VERSION
+
 use Carp;
 
 #Error message known

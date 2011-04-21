@@ -4,6 +4,9 @@ package Dancer::Plugin::Redis;
 
 use strict;
 use warnings;
+use 5.012;
+
+# VERSION
 
 use Dancer::Plugin;
 use Redis;

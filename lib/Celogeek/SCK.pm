@@ -16,6 +16,8 @@ use strict;
 use warnings;
 use 5.012;
 
+# VERSION
+
 use Moose;
 
 use Celogeek::SCK::Cleaner;

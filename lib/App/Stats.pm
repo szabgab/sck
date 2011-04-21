@@ -12,6 +12,8 @@ use strict;
 use warnings;
 use 5.012;
 
+# VERSION
+
 use Dancer ':syntax';
 
 #catch s=1 in queries, for stats
