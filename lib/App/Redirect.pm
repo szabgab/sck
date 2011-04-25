@@ -11,10 +11,12 @@ This module redirect to the long url, or return it if a=1 has been pass as args
 use strict;
 use warnings;
 use 5.012;
+use Carp;
 
 # VERSION
 
 use Dancer ':syntax';
+use HTTP::BrowserDetect;
 
 #API part : params a=1
 get qr{^/(.+)$}x => sub {
@@ -34,16 +36,24 @@ get qr{^/(.+)$}x => sub {
 get qr{^/(.+)$}x => sub {
     my ($key) = splat();
 
-    #always count 1 click, but use cookie to detect new clic_uniq
-    my $click      = 1;
+    #detect browser
+    my $browser = HTTP::BrowserDetect->new();
+
+    #always count click, but use cookie to detect new clic_uniq
+    my $click      = 0;
     my $click_uniq = 0;
 
-    #detect if cookie exist, and add 1 clic_uniq if it's not the case
-    my $cookie_name = join( '_', 'sck', $key );
-    $cookie_name =~ s!/+!_!xg;
-    unless ( defined cookies->{$cookie_name} ) {
-        set_cookie( $cookie_name => '1', expires => ( time + 86400 ) );
-        $click_uniq = 1;
+    #we do count only if it's not a robot
+    unless ($browser->robot()) {
+        $click = 1;
+
+        #detect if cookie exist, and add 1 clic_uniq if it's not the case
+        my $cookie_name = join( '_', 'sck', $key );
+        $cookie_name =~ s!/+!_!xg;
+        unless ( defined cookies->{$cookie_name} ) {
+            set_cookie( $cookie_name => '1', expires => ( time + 86400 ) );
+            $click_uniq = 1;
+        }
     }
 
     #take long url and redirect
