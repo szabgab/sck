@@ -58,5 +58,3 @@ foreach my $key ( redis->keys("h:*") ) {
 
 }
 
-say "";
-say "Done";
