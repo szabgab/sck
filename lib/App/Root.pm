@@ -47,14 +47,33 @@ any [ 'get', 'post' ] => '/' => sub {
         push @title, vars->{base} . vars->{sck}->shorten( params->{url} );
     }
     catch {
-
         #push long title if any error occur
         push @title, params->{url};
-
     };
 
     return redirect( "http://twitter.com/?status="
             . uri_escape_utf8( join( ' - ', @title ) ) );
+};
+
+#facebook, call with f=1
+any [ 'get', 'post' ] => '/' => sub {
+    return pass() unless defined params->{f} && defined params->{url};
+
+    my $title = params->{title} // "";
+    my $url;
+
+    try {
+        $url = vars->{base} . vars->{sck}->shorten( params->{url} );
+    }
+    catch {
+        #push long title if any error occur
+        $url = params->{url};
+    };
+
+    return redirect( "http://www.facebook.com/share.php" .
+        "?u=" . uri_escape_utf8( $url ) . 
+        "&t=" . uri_escape_utf8( $title )
+    );
 };
 
 #normal call with url
