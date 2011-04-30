@@ -240,11 +240,29 @@ sub _extract_short_content {
 
     $content = Encode::decode( $self->header->{encoding}, $content );
 
+    #decode entities
+    decode_entities($content);
+
+    #encode utf8
+    $content = Encode::encode( "UTF-8", $content );
+
     my $extractor = HTML::ContentExtractor->new();
     $extractor->extract( $request->base, $content );
 
-    #extract short content
-    return substr($extractor->as_text(), 0, 200);
+    #short content
+    my $short_content = substr($extractor->as_text(), 0, 500);
+    if (length($content) > 500) {
+        $short_content .= ' ...';
+    }
+
+    #oneline html short_content
+    $short_content =~ s![\r\n]! !gx;
+    $short_content =~ s!\s+! !gx;
+
+    #Remove white space
+    $short_content =~ s!$RE{ws}{crop}!!gx;
+
+    return $short_content;
 }
 
 1;
