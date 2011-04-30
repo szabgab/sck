@@ -27,7 +27,7 @@ use Config::YAML;
 use Net::DNS;
 
 #set analyzer version, permit to rescan only old or new link
-$Celogeek::SCK::Analyzer::ANALYZER_VERSION = 1;
+$Celogeek::SCK::Analyzer::ANALYZER_VERSION = 2;
 
 #check dns
 my $_resolver        = Net::DNS::Resolver->new;
@@ -76,6 +76,7 @@ Content all useful headers of uri
 has header => (
     isa => 'HashRef',
     is  => 'rw',
+    default => sub { {} },
 );
 
 =attr content
@@ -93,8 +94,9 @@ has content => (
 
 Method of extraction
 
+    host: check only host for api
     header: extract header only
-    full: get title, keywords, and category
+    full: get title, short content
 
 =cut
 
@@ -109,6 +111,10 @@ has method => (
 
 Initialize the analyzer.
 
+check host only :
+
+    my $analyzer = Celogeek::SCK::Analyzer->new(uri => $url, method => 'host');
+
 header only :
 
     my $analyzer = Celogeek::SCK::Analyzer->new(uri => $url, method => 'header');
@@ -121,6 +127,15 @@ full content :
 
 sub BUILD {
     my ($self) = @_;
+
+    {
+        $self->header({
+                status => 'PORN/ILLEGAL',
+        }) unless $self->_is_valid_host($self->uri->host());
+    }
+
+    return if $self->method() eq 'host';
+    return if defined $self->header()->{status};
 
     {
         my $request = $_ua_header->get( $self->uri );
@@ -139,6 +154,18 @@ sub BUILD {
     return;
 }
 
+####################### PRIVATE ##################
+
+sub _is_valid_host {
+    my ($self, $host) = @_;
+    #check porno/illegal
+    my $dns_message = $_resolver->search( $host );
+    foreach my $rr ( $dns_message->answer ) {
+        next unless $rr->type eq 'A';
+        return 0 if $rr->address eq $_resolver_bad_ip;
+    }
+    return 1;
+}
 sub _extract_header {
     my ( $self, $request ) = @_;
 
@@ -165,24 +192,16 @@ sub _extract_content {
 
     $self->content(
         {   title      => $self->_extract_title($request),
-            word_score => $self->_extract_word_score($request),
+            short_content => $self->_extract_short_content($request),
         }
     );
 
     return;
 }
 
+
 sub _extract_status {
     my ( $self, $request ) = @_;
-    if ( $request->status_line eq '200 OK' ) {
-
-        #check porno/illegal
-        my $dns_message = $_resolver->search( $request->base->host );
-        foreach my $rr ( $dns_message->answer ) {
-            next unless $rr->type eq 'A';
-            return 'PORN/ILLEGAL' if $rr->address eq $_resolver_bad_ip;
-        }
-    }
     return $request->status_line;
 }
 
@@ -214,27 +233,18 @@ sub _extract_title {
     return $title;
 }
 
-sub _extract_word_score {
+sub _extract_short_content {
     my ( $self, $request ) = @_;
 
     my $content = $request->content;
 
-    #Encode::from_to($content, $self->header->{encoding}, "UTF-8");
     $content = Encode::decode( $self->header->{encoding}, $content );
 
     my $extractor = HTML::ContentExtractor->new();
     $extractor->extract( $request->base, $content );
 
-    #extract words
-    my @words = $extractor->as_text() =~ m!(\w{2,}+)!gx;
-
-    #score it
-    my %word_score = ();
-    foreach my $word (@words) {
-        $word_score{ lc($word) }++;
-    }
-
-    return \%word_score;
+    #extract short content
+    return substr($extractor->as_text(), 0, 200);
 }
 
 1;
