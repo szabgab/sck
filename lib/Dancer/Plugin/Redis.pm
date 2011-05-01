@@ -69,8 +69,8 @@ sub _get_connection {
     my $s = shift;
 
     my $r = Redis->new(
-        server => $s->{server},
-        debug  => $s->{debug},
+        server   => $s->{server},
+        debug    => $s->{debug},
         encoding => $s->{encoding},
     );
 

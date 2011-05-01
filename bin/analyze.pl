@@ -11,13 +11,12 @@ use Carp;
 use Dancer ':script';
 use Dancer::Plugin::Redis;
 use Celogeek::SCK::Analyzer;
-use JSON ();
 
 foreach my $key ( redis->keys("h:*") ) {
     my ($analyzer_version) = redis->hget( $key, "analyzer" );
     next
         if !defined $ENV{FORCE}
-        && defined $analyzer_version
+            && defined $analyzer_version
             && $analyzer_version
             == $Celogeek::SCK::Analyzer::ANALYZER_VERSION;
 
@@ -51,10 +50,13 @@ foreach my $key ( redis->keys("h:*") ) {
 
     my $content = $analyzer->content();
     next unless $content;
-    say "   Title : ", $content->{title};
-    redis->hset( $key, 'title', $content->{title} );
-    redis->hset( $key, 'word_score',
-        JSON::encode_json( $content->{word_score} ) );
+    say "   Title : ",         $content->{title};
+    say "   Short Content : ", $content->{short_content};
+    redis->hset( $key, 'title',         $content->{title} );
+    redis->hset( $key, 'short_content', $content->{short_content} );
+
+    #to clean v1
+    redis->hdel( $key, 'word_score' );
 
 }
 
