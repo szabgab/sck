@@ -38,15 +38,19 @@ $_resolver->nameservers( '208.67.222.222', '208.67.220.220' );
 
 #init UA
 
+#agent
+my $_agent = "PerlBot_SCK/";
+$_agent .= $Celogeek::SCK::Analyzer::VERSION // "DEV";
+
 #extract header
 my $_ua_header = LWP::UserAgent->new;
-$_ua_header->agent("Mozilla");
+$_ua_header->agent($_agent);
 $_ua_header->timeout(10);
 $_ua_header->max_size(2000);
 
 #extract content
 my $_ua_content = LWP::UserAgent->new;
-$_ua_content->agent("Mozilla");
+$_ua_content->agent($_agent);
 $_ua_content->timeout(30);
 
 subtype 'SCK:Method' => as 'Str' => where {
