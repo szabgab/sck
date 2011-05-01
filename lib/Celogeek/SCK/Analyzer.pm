@@ -50,8 +50,7 @@ $_ua_content->agent("Mozilla");
 $_ua_content->timeout(30);
 
 subtype 'SCK:Method' => as 'Str' => where {
-    $_ eq 'header'
-        || $_ eq 'full';
+    $_ eq 'host' || $_ eq 'header' || $_ eq 'full';
 };
 
 =attr uri
@@ -74,8 +73,8 @@ Content all useful headers of uri
 =cut
 
 has header => (
-    isa => 'HashRef',
-    is  => 'rw',
+    isa     => 'HashRef',
+    is      => 'rw',
     default => sub { {} },
 );
 
@@ -128,14 +127,14 @@ full content :
 sub BUILD {
     my ($self) = @_;
 
-    {
-        $self->header({
-                status => 'PORN/ILLEGAL',
-        }) unless $self->_is_valid_host($self->uri->host());
+    if ( $self->_is_valid_host( $self->uri->host() ) ) {
+        $self->header( { status => '200 OK', } );
+    }
+    else {
+        $self->header( { status => 'PORN/ILLEGAL', } );
     }
 
     return if $self->method() eq 'host';
-    return if defined $self->header()->{status};
 
     {
         my $request = $_ua_header->get( $self->uri );
@@ -157,25 +156,28 @@ sub BUILD {
 ####################### PRIVATE ##################
 
 sub _is_valid_host {
-    my ($self, $host) = @_;
+    my ( $self, $host ) = @_;
+
     #check porno/illegal
-    my $dns_message = $_resolver->search( $host );
+    my $dns_message = $_resolver->search($host);
     foreach my $rr ( $dns_message->answer ) {
         next unless $rr->type eq 'A';
         return 0 if $rr->address eq $_resolver_bad_ip;
     }
     return 1;
 }
+
 sub _extract_header {
     my ( $self, $request ) = @_;
 
-    my ( $content_type, $encoding )
-        = split( ';', $request->header("Content-Type") );
+    my ( $content_type, $encoding ) =
+      split( ';', $request->header("Content-Type") );
     $encoding //= "UTF-8";
     $encoding =~ s!charset=!!x;
 
     $self->header(
-        {   status       => $self->_extract_status($request),
+        {
+            status       => $self->_extract_status($request),
             content_type => $content_type,
             encoding     => uc($encoding),
         }
@@ -191,14 +193,14 @@ sub _extract_content {
     $self->content( {} );
 
     $self->content(
-        {   title      => $self->_extract_title($request),
+        {
+            title         => $self->_extract_title($request),
             short_content => $self->_extract_short_content($request),
         }
     );
 
     return;
 }
-
 
 sub _extract_status {
     my ( $self, $request ) = @_;
@@ -250,8 +252,8 @@ sub _extract_short_content {
     $extractor->extract( $request->base, $content );
 
     #short content
-    my $short_content = substr($extractor->as_text(), 0, 500);
-    if (length($content) > 500) {
+    my $short_content = substr( $extractor->as_text(), 0, 500 );
+    if ( length($content) > 500 ) {
         $short_content .= ' ...';
     }
 

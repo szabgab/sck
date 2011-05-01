@@ -44,27 +44,30 @@ has 'redis' => (
 has 'generated_times' => (
     'is'       => 'rw',
     'isa'      => 'Int',
-    'required' => 1,
     'default'  => 0,
 );
 
 has 'max_generated_times' => (
     'is'       => 'rw',
     'isa'      => 'Int',
-    'required' => 1,
     'default'  => 0,
 );
 
 has 'max_letters' => (
     'is'       => 'rw',
     'isa'      => 'Int',
-    'required' => 1,
     'default'  => 1,
 );
 
 has 'status' => (
     'is'  => 'rw',
     'isa' => 'Str',
+);
+
+has 'check_method' => (
+    'is' => 'rw',
+    'isa' => 'Str',
+    'default' => 'header',
 );
 
 =method BUILD
@@ -147,7 +150,7 @@ sub shorten {
 
         #check url
         my $analyzer
-            = Celogeek::SCK::Analyzer->new( uri => $url, method => 'header' );
+            = Celogeek::SCK::Analyzer->new( uri => $url, method => $self->check_method() );
         my $header = $analyzer->header();
         $self->status( $header->{status} );
 
