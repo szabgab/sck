@@ -44,7 +44,7 @@ get qr{^/(.+)$}x => sub {
     my $click_uniq = 0;
 
     #we do count only if it's not a robot
-    unless ($browser->robot()) {
+    unless ( $browser->robot() ) {
         $click = 1;
 
         #detect if cookie exist, and add 1 clic_uniq if it's not the case

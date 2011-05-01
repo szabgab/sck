@@ -38,7 +38,7 @@ foreach my $pkey ( redis->keys("p:*") ) {
         say "Removing $pkey";
         redis->del($pkey) if $cleaner->run();
         say "Removing top10 member $key";
-        redis->zrem('s:top10', $key);
+        redis->zrem( 's:top10', $key );
     }
 }
 

@@ -42,21 +42,21 @@ has 'redis' => (
 );
 
 has 'generated_times' => (
-    'is'       => 'rw',
-    'isa'      => 'Int',
-    'default'  => 0,
+    'is'      => 'rw',
+    'isa'     => 'Int',
+    'default' => 0,
 );
 
 has 'max_generated_times' => (
-    'is'       => 'rw',
-    'isa'      => 'Int',
-    'default'  => 0,
+    'is'      => 'rw',
+    'isa'     => 'Int',
+    'default' => 0,
 );
 
 has 'max_letters' => (
-    'is'       => 'rw',
-    'isa'      => 'Int',
-    'default'  => 1,
+    'is'      => 'rw',
+    'isa'     => 'Int',
+    'default' => 1,
 );
 
 has 'status' => (
@@ -65,8 +65,8 @@ has 'status' => (
 );
 
 has 'check_method' => (
-    'is' => 'rw',
-    'isa' => 'Str',
+    'is'      => 'rw',
+    'isa'     => 'Str',
     'default' => 'header',
 );
 
@@ -149,8 +149,10 @@ sub shorten {
     else {
 
         #check url
-        my $analyzer
-            = Celogeek::SCK::Analyzer->new( uri => $url, method => $self->check_method() );
+        my $analyzer = Celogeek::SCK::Analyzer->new(
+            uri    => $url,
+            method => $self->check_method()
+        );
         my $header = $analyzer->header();
         $self->status( $header->{status} );
 
@@ -266,7 +268,7 @@ sub top10 {
 
         # too many try, never try again
         if ( $data->{title} ) {
-            Encode::_utf8_on($data->{title});
+            Encode::_utf8_on( $data->{title} );
 
             #if title exist, use it
             if ( $data->{title} ne $data->{url} ) {

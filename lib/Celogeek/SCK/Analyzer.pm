@@ -170,14 +170,13 @@ sub _is_valid_host {
 sub _extract_header {
     my ( $self, $request ) = @_;
 
-    my ( $content_type, $encoding ) =
-      split( ';', $request->header("Content-Type") );
+    my ( $content_type, $encoding )
+        = split( ';', $request->header("Content-Type") );
     $encoding //= "UTF-8";
     $encoding =~ s!charset=!!x;
 
     $self->header(
-        {
-            status       => $self->_extract_status($request),
+        {   status       => $self->_extract_status($request),
             content_type => $content_type,
             encoding     => uc($encoding),
         }
@@ -193,8 +192,7 @@ sub _extract_content {
     $self->content( {} );
 
     $self->content(
-        {
-            title         => $self->_extract_title($request),
+        {   title         => $self->_extract_title($request),
             short_content => $self->_extract_short_content($request),
         }
     );
