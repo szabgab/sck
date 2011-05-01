@@ -32,9 +32,15 @@ $('ul.tabs a').live('click', function(e) {
 });
 
 $('input.readonly').live('keypress',function(e) {
-    if(!e.metaKey){
-        e.preventDefault();
+    if(e.metaKey){
+        if (e.which == 97 || e.which == 99) { //meta + a or meta + c
+            return;
+        }
     }
+    if (e.which == 0) {
+        return;
+    }
+    e.preventDefault();
 });
 
 $('button[href]').live('click',function(e) {

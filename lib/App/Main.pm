@@ -41,6 +41,11 @@ before sub {
         vars->{sck}->max_letters(
             length( params->{url} ) - length( vars->{base} ) - 1 );
     }
+
+    #if api set lighter check method
+    if ( defined params->{a} ) {
+        vars->{sck}->check_method('host');
+    }
 };
 
 1;

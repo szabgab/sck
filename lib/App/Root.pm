@@ -47,6 +47,7 @@ any [ 'get', 'post' ] => '/' => sub {
         push @title, vars->{base} . vars->{sck}->shorten( params->{url} );
     }
     catch {
+
         #push long title if any error occur
         push @title, params->{url};
     };
@@ -66,14 +67,14 @@ any [ 'get', 'post' ] => '/' => sub {
         $url = vars->{base} . vars->{sck}->shorten( params->{url} );
     }
     catch {
+
         #push long title if any error occur
         $url = params->{url};
     };
 
-    return redirect( "http://www.facebook.com/share.php" .
-        "?u=" . uri_escape_utf8( $url ) . 
-        "&t=" . uri_escape_utf8( $title )
-    );
+    return redirect( "http://www.facebook.com/share.php" . "?u="
+            . uri_escape_utf8($url) . "&t="
+            . uri_escape_utf8($title) );
 };
 
 #normal call with url
