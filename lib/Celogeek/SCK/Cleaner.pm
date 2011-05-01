@@ -40,23 +40,21 @@ sub is_valid_uri {
         }
     );
 
-    #no short uri
-    unless (
-        $uri->host =~ m!
-        ^localhost$ |
-        ^localhost: |
-        ^sck\.to$ |
-        ^susbck\.com$ |
-        ^url\.celogeek\.(fr|com)$ |
-        ^\d+\.\d+\.\d+\.\d+$
-        !x
-        )
-    {
-        if ( $uri->scheme eq 'http' || $uri->scheme eq 'https' ) {
-            return 1;
+    my @bad_url_regexes = (
+        qr{^localhost$}x,               qr{^localhost:}x,
+        qr{^sck\.to$}x,                 qr{^susbck\.com$}x,
+        qr{^url\.celogeek\.(fr|com)$}x, qr{^\d+\.\d+\.\d+\.\d+$}x,
+    );
+
+    if ( $uri->scheme eq 'http' || $uri->scheme eq 'https' ) {
+        foreach my $bad_url_regex (@bad_url_regexes) {
+            return if $uri->host =~ $bad_url_regex;
         }
+        return 1;
     }
-    return;
+    else {
+        return;
+    }
 }
 
 1;
