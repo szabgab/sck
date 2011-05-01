@@ -30,7 +30,10 @@
     <div class="container">
         <% SET span_size = bookmarklet ? 14 : 24 %>
         <div id="header" class="span-<% span_size %> last">
-            <h1 class="loud"><% FILTER ucfirst %><% request.host %><% END %></h1>
+            <h1 class="loud">
+                <% FILTER ucfirst %><% request.host %><% END %>
+                <img src="<% request.base %>images/spinner.gif" class="right" id="spinner"/>
+            </h1>
         </div>
         <hr />
         <div id="subheader" class="span-<% span_size %> last">

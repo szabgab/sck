@@ -11,14 +11,17 @@ var SCK = function () {
         },
         'switchtab' : function(to) {
             //fadeIn and fadeOut new content
+            $('#spinner').show();
             var from = [];
             $('ul.tabs a').each(function(i,e) {
                 from.push($(e).attr('href')+":visible");
             }); 
 
             $(from.join(',')).fadeOut('fast', function() {
-                $(to).fadeIn('fast');
-        });
+                $(to).fadeIn('fast', function() {
+                    $('#spinner').hide();
+                });
+            });
 
         }
     }
@@ -66,6 +69,7 @@ $('div#shortenform form').live('submit',function(e) {
     for(var i=0; i<data.length; i+=1) {
         params[data[i].name]=data[i].value;
     }
+    $('#spinner').show();
     $('div#shortenlinks').load('/', params, function() {
         SCK.switchtab($('div#shortenlinks'));
     });
