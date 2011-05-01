@@ -43,9 +43,12 @@ sub is_valid_uri {
     #no short uri
     unless (
         $uri->host =~ m!
+        ^localhost$ |
+        ^localhost: |
         ^sck\.to$ |
         ^susbck\.com$ |
-        ^url\.celogeek\.(fr|com)$
+        ^url\.celogeek\.(fr|com)$ |
+        ^\d+\.\d+\.\d+\.\d+$
         !x
         )
     {

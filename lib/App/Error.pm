@@ -20,7 +20,7 @@ use Carp;
 my $_error_msg = {
     'NO WAY TO SHORTEN' => qq{Impossible to shorten this URL},
     'BAD URL' =>
-        qq{Your url is bad. It has to start with 'http://' or 'https://'.},
+        qq{Your url is bad. It has to start with 'http://' or 'https://. It should be a full domain name (not an IP). And should not be a SCK url.'.},
     'TOO MANY TRIES'        => qq{Too many tries (> %d). Try again.},
     'THIS KEY DOESNT EXIST' => qq{This tinyurl doesn't exist},
     'PORN/ILLEGAL'          => qq{Porn or illegal link are not accepted},
