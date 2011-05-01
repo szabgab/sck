@@ -1,3 +1,12 @@
+1.2 - 2011-05-01 12:00
+=====
+
+    * Make api check url light (only ip)
+    * Improve javascript key block
+    * Improve BAD URL message and detection
+    * Remove word extraction
+    * Add short content extraction (prepare for Tags page)
+    
 1.1 - 2011-04-29 10:45
 =====
 
