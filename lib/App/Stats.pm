@@ -10,7 +10,7 @@ This is the stats module, it will show all stats information concerning your tin
 
 use strict;
 use warnings;
-use 5.012;
+use 5.014;
 
 # VERSION
 

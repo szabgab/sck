@@ -1,4 +1,4 @@
-use 5.012;
+use 5.014;
 
 use Dancer::Test;
 Dancer::set environment => 'testing';
