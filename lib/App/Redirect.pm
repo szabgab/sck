@@ -10,7 +10,7 @@ This module redirect to the long url, or return it if a=1 has been pass as args
 
 use strict;
 use warnings;
-use 5.012;
+use 5.014;
 use Carp;
 
 # VERSION

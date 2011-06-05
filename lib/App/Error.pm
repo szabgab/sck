@@ -10,7 +10,7 @@ App::Error convert throw messages from SCK into a readable message for visitor
 
 use strict;
 use warnings;
-use 5.012;
+use 5.014;
 
 # VERSION
 
