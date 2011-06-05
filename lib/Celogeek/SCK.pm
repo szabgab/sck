@@ -205,6 +205,7 @@ sub enlarge {
 
         #incr click part
         $self->redis->hincrby( $hash_key, 'clicks', 1 );
+        $self->redis->hincrby( 's:traffic', $today->ymd, 1 );
 
         #we have a clicks_uniq
         if ($clicks_uniq) {
@@ -217,7 +218,7 @@ sub enlarge {
 
             #add a score to traffic
 
-            $self->redis->hincrby( 's:traffic', $today->ymd, 1 );
+            $self->redis->hincrby( 's:traffic:uniq', $today->ymd, 1 );
         }
         $self->_save( $hash_key, { last_accessed_at => $today } );
     }
