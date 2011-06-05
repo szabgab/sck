@@ -10,7 +10,7 @@ Main App for the dancer app SCK. This part manage request on "/" only
 
 use strict;
 use warnings;
-use 5.012;
+use 5.014;
 
 # VERSION
 
