@@ -96,7 +96,7 @@ sub generate {
     my ($self) = @_;
 
     my $key_size = $self->redis->get('c:min_letters');
-    croak "SCK:[NO WAY TO SHORTEN]" if $self->max_letters < $key_size;
+    croak 'SCK:[NO WAY TO SHORTEN]' if $self->max_letters < $key_size;
 
     my @letters_to_use = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9, '/' );
 
@@ -135,16 +135,16 @@ Return an existing short key for long url, or try to generate a new one
 sub shorten {
     my ( $self, $url ) = @_;
     try {
-        croak "SCK:[BAD URL]" unless $_cleaner->is_valid_uri( uri => $url );
+        croak 'SCK:[BAD URL]' unless $_cleaner->is_valid_uri( uri => $url );
     }
     catch {
-        croak "SCK:[BAD URL]";
+        croak 'SCK:[BAD URL]';
     };
 
     #look in redis db
     my $hash_key = $self->_hash_key($url);
     if ( $self->redis->exists($hash_key) ) {
-        return $self->redis->hget( $hash_key, "path" );
+        return $self->redis->hget( $hash_key, 'path' );
     }
     else {
 
@@ -158,12 +158,12 @@ sub shorten {
 
         #porn link
         if ( $self->status() eq 'PORN/ILLEGAL' ) {
-            croak "SCK:[PORN/ILLEGAL]";
+            croak 'SCK:[PORN/ILLEGAL]';
         }
 
         #status is not 200 OK, unreachable
         if ( $self->status() ne '200 OK' ) {
-            croak "SCK:[UNREACHABLE HOST]";
+            croak 'SCK:[UNREACHABLE HOST]';
         }
 
         #generate a new one
@@ -194,27 +194,34 @@ sub enlarge {
     my ( $self, $key, %opts ) = @_;
     my $clicks      = $opts{clicks}      // 0;
     my $clicks_uniq = $opts{clicks_uniq} // 0;
-    croak "SCK:[THIS KEY DOESNT EXIST]"
+    croak 'SCK:[THIS KEY DOESNT EXIST]'
         unless ( $self->redis->exists( $self->_path_key($key) ) );
 
     my $hash_key = $self->redis->get( $self->_path_key($key) );
 
     #we have a clicks
     if ($clicks) {
+        my $today = DateTime->now; 
 
         #incr click part
-        $self->redis->hincrby( $hash_key, "clicks", 1 );
+        $self->redis->hincrby( $hash_key, 'clicks', 1 );
 
         #we have a clicks_uniq
         if ($clicks_uniq) {
 
+            #add score to element
+            $self->redis->hincrby( $hash_key, 'clicks_uniq', 1 );
+
             #add a score to top10
-            $self->redis->hincrby( $hash_key, "clicks_uniq", 1 );
-            $self->redis->zincrby( "s:top10", 1, $hash_key );
+            $self->redis->zincrby( 's:top10', 1, $hash_key );
+
+            #add a score to traffic
+
+            $self->redis->hincrby( 's:traffic', $today->ymd, 1 );
         }
-        $self->_save( $hash_key, { last_accessed_at => DateTime->now } );
+        $self->_save( $hash_key, { last_accessed_at => $today } );
     }
-    return $self->redis->hget( $hash_key, "url" );
+    return $self->redis->hget( $hash_key, 'url' );
 }
 
 =method stats
@@ -225,7 +232,7 @@ Return stats for a specific key
 
 sub stats {
     my ( $self, $key, %opts ) = @_;
-    $opts{date_format} //= "%c UTC";
+    $opts{date_format} //= '%c UTC';
 
     if ( $self->redis->exists( $self->_path_key($key) ) ) {
         my $data = $self->_get( $self->redis->get( $self->_path_key($key) ) );
@@ -238,7 +245,7 @@ sub stats {
         return $data;
     }
     else {
-        croak "SCK:[THIS KEY DOESNT EXIST]";
+        croak 'SCK:[THIS KEY DOESNT EXIST]';
     }
 }
 
@@ -264,7 +271,7 @@ sub top10 {
         $data->{$_} = $self->redis->hget( $member_key, $_ )
             for qw/url path title/;
 
-        $data->{alt} = "";
+        $data->{alt} = '';
 
         # too many try, never try again
         if ( $data->{title} ) {
@@ -272,7 +279,7 @@ sub top10 {
 
             #if title exist, use it
             if ( $data->{title} ne $data->{url} ) {
-                $data->{alt} = $data->{title} . " - ";
+                $data->{alt} = $data->{title} . ' - ';
             }
         }
         else {
@@ -280,7 +287,7 @@ sub top10 {
         }
 
         #set alt
-        $data->{alt} .= $data->{url} . " - Score " . $data->{score};
+        $data->{alt} .= $data->{url} . ' - Score ' . $data->{score};
 
         push @top10_data, $data;
     }
@@ -303,7 +310,7 @@ sub _datetime_str {
     my $self = shift;
     my $date = shift;
 
-    return $date->ymd . " " . $date->hms;
+    return $date->ymd . ' ' . $date->hms;
 }
 
 #save a hash to redis
@@ -339,21 +346,21 @@ sub _redis_key {
     my $self   = shift;
     my $prefix = shift;
     my $key    = shift;
-    return $prefix . ":" . sha1_hex($key);
+    return $prefix . ':' . sha1_hex($key);
 }
 
 #key for path (short link), start with p:
 sub _path_key {
     my $self = shift;
     my $path = shift;
-    return $self->_redis_key( "p", $path );
+    return $self->_redis_key( 'p', $path );
 }
 
 #key for hash (url information), start with h:
 sub _hash_key {
     my $self = shift;
     my $url  = shift;
-    return $self->_redis_key( "h", $url );
+    return $self->_redis_key( 'h', $url );
 }
 
 no Moose;
