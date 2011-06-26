@@ -16,7 +16,7 @@ use 5.014;
 
 #Initialise dancer app
 use Dancer ':syntax';
-use Dancer::Plugin::Redis;
+use Dancer::Plugin::Redis 0.3;
 
 #Load SCK module
 use Celogeek::SCK;
