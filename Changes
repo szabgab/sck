@@ -1,3 +1,8 @@
+1.5 - 2011-06-26 15:30
+=====
+
+    * Use Dancer::Plugin::Redis 0.3 (revamp from me, look at github)
+
 1.4 - 2011-06-07 23:40
 =====
 
