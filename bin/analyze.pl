@@ -15,16 +15,16 @@ use Celogeek::SCK::Analyzer;
 my $redis = redis;
 
 foreach my $key ( $redis->keys("h:*") ) {
-    my ($analyzer_version) = $redis->hget( $key, "analyzer" );
+    my %info = $redis->hgetall($key);
     unless ( $ENV{FORCE} ) {
         if ( $ENV{FORCE_ONLY_BAD_STATUS} ) {
-            if ( ( $redis->hget( $key, 'status' ) // '' ) eq '200 OK' ) {
+            if ( ( $info{status} // '' ) eq '200 OK' ) {
                 next;
             }
         }
         else {
-            if ( defined $analyzer_version
-                && $analyzer_version ==
+            if ( defined $info{analyzer}
+                && $info{analyzer} ==
                 $Celogeek::SCK::Analyzer::ANALYZER_VERSION )
             {
                 next;
@@ -33,11 +33,14 @@ foreach my $key ( $redis->keys("h:*") ) {
     }
 
     #get real uri
-    my ($url) = $redis->hget( $key, "url" );
+    my ($url) = $info{url};
+    my ($path) = $info{path};
 
     say "";
     say "Analyzing $key";
     say "   URL : ", $url;
+    say " Short : http://sck.to/", $path;
+    say " Stats : http://sck.to/", $path,"?s=1";
 
     my $analyzer =
       Celogeek::SCK::Analyzer->new( uri => $url, method => 'full' );
