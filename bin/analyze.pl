@@ -16,11 +16,21 @@ my $redis = redis;
 
 foreach my $key ( $redis->keys("h:*") ) {
     my ($analyzer_version) = $redis->hget( $key, "analyzer" );
-    next
-        if !defined $ENV{FORCE}
-            && defined $analyzer_version
-            && $analyzer_version
-            == $Celogeek::SCK::Analyzer::ANALYZER_VERSION;
+    unless ( $ENV{FORCE} ) {
+        if ( $ENV{FORCE_ONLY_BAD_STATUS} ) {
+            if ( ( $redis->hget( $key, 'status' ) // '' ) eq '200 OK' ) {
+                next;
+            }
+        }
+        else {
+            if ( defined $analyzer_version
+                && $analyzer_version ==
+                $Celogeek::SCK::Analyzer::ANALYZER_VERSION )
+            {
+                next;
+            }
+        }
+    }
 
     #get real uri
     my ($url) = $redis->hget( $key, "url" );
@@ -29,8 +39,8 @@ foreach my $key ( $redis->keys("h:*") ) {
     say "Analyzing $key";
     say "   URL : ", $url;
 
-    my $analyzer
-        = Celogeek::SCK::Analyzer->new( uri => $url, method => 'full' );
+    my $analyzer =
+      Celogeek::SCK::Analyzer->new( uri => $url, method => 'full' );
 
     #check if status is 200 (only reachable link is ok)
     my $header = $analyzer->header();
@@ -43,12 +53,8 @@ foreach my $key ( $redis->keys("h:*") ) {
     }
 
     #set analyzer version if status OK
-    if (   $header->{status} eq '200 OK'
-        || $header->{status} eq 'PORN/ILLEGAL' )
-    {
-        $redis->hset( $key, 'analyzer',
-            $Celogeek::SCK::Analyzer::ANALYZER_VERSION );
-    }
+    $redis->hset( $key, 'analyzer',
+        $Celogeek::SCK::Analyzer::ANALYZER_VERSION );
 
     my $content = $analyzer->content();
     next unless $content;
@@ -56,9 +62,6 @@ foreach my $key ( $redis->keys("h:*") ) {
     say "   Short Content : ", $content->{short_content};
     $redis->hset( $key, 'title',         $content->{title} );
     $redis->hset( $key, 'short_content', $content->{short_content} );
-
-    #to clean v1
-    $redis->hdel( $key, 'word_score' );
 
 }
 
