@@ -9,9 +9,11 @@ use 5.014;
 use Carp;
 
 use Dancer ':script';
-use Dancer::Plugin::Redis;
+use Dancer::Plugin::Redis 0.3;
 use Celogeek::SCK::Analyzer;
 
-redis->del("s:top10");
-redis->set("c:min_letters", 1);
+my $redis = redis;
+
+$redis->del("s:top10");
+$redis->set("c:min_letters", 1);
 
