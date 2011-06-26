@@ -9,7 +9,7 @@ use 5.014;
 use Carp;
 
 use Dancer ':script';
-use Dancer::Plugin::Redis;
+use Dancer::Plugin::Redis 0.3;
 use Celogeek::SCK::Analyzer;
 
 my $redis = redis;

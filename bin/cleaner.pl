@@ -9,7 +9,7 @@ use 5.014;
 use Carp;
 
 use Dancer ':script';
-use Dancer::Plugin::Redis;
+use Dancer::Plugin::Redis 0.3;
 use Celogeek::SCK::Cleaner;
 
 my $cleaner = Celogeek::SCK::Cleaner->new_with_options();
