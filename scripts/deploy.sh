@@ -24,4 +24,5 @@ then
 else
     cp "$RPATH"/current/config.yml.example "$RPATH"/current/config.yml
 fi
+sudo kill $(ps ax | grep 'starman master' | grep -v grep | awk '{print $1}')
 
