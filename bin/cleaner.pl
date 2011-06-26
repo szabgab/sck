@@ -17,7 +17,7 @@ my $cleaner = Celogeek::SCK::Cleaner->new_with_options();
 my $redis = redis;
 
 foreach my $key ( $redis->keys("h:*") ) {
-    my ( $url, $status ) = $redis->hmget( $key, 'url', 'status' );
+    my ( $url, $status, $content_type ) = $redis->hmget( $key, 'url', 'status', 'content_type' );
 
     #check if it's an SCK key
     unless ( $cleaner->is_valid_uri( uri => $url ) ) {
@@ -28,6 +28,12 @@ foreach my $key ( $redis->keys("h:*") ) {
 
     if ( defined $status && $status ne '200 OK' ) {
         say "Bad status link : $url ($status)";
+        $redis->del($key) if $cleaner->run();
+        next;
+    }
+
+    if ( defined $content_type && $content_type eq 'application/octet-stream' ) {
+        say "Bad content type : $url ($content_type)";
         $redis->del($key) if $cleaner->run();
         next;
     }
