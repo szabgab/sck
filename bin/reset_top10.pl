@@ -12,6 +12,8 @@ use Dancer ':script';
 use Dancer::Plugin::Redis;
 use Celogeek::SCK::Analyzer;
 
-redis->del("s:top10");
-redis->set("c:min_letters", 1);
+my $redis = redis;
+
+$redis->del("s:top10");
+$redis->set("c:min_letters", 1);
 
