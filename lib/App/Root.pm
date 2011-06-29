@@ -42,7 +42,8 @@ any [ 'get', 'post' ] => '/' => sub {
 any [ 'get', 'post' ] => '/' => sub {
     return pass() unless defined params->{t} && defined params->{url};
 
-    my $fetch_title = params->{title} // vars->{sck}->title(params->{url}) // "";
+    my $fetch_title = params->{title} // vars->{sck}->title( params->{url} )
+      // "";
     my @title = ($fetch_title);
 
     try {
@@ -62,7 +63,7 @@ any [ 'get', 'post' ] => '/' => sub {
 any [ 'get', 'post' ] => '/' => sub {
     return pass() unless defined params->{f} && defined params->{url};
 
-    my $title = params->{title} // vars->{sck}->title(params->{url}) // "";
+    my $title = params->{title} // vars->{sck}->title( params->{url} ) // "";
     my $url;
 
     try {
@@ -150,11 +151,24 @@ get qr{^/(.*)$}x => sub {
     my ($path) = splat;
     return pass() if $path && !params->{s};
     my $stats_info_ref;
-    if ( $path ) {
-        $stats_info_ref =
-          vars->{sck}->stats( $path, 'date_format' => '%c UTC' );
-        $stats_info_ref->{short_url} = vars->{base} . $stats_info_ref->{path};
-        $stats_info_ref->{version}   = $Celogeek::SCK::VERSION;
+    my $error_message;
+    if ($path) {
+        try {
+            $stats_info_ref =
+              vars->{sck}->stats( $path, 'date_format' => '%c UTC' );
+            $stats_info_ref->{short_url} =
+              vars->{base} . $stats_info_ref->{path};
+            $stats_info_ref->{version} = $Celogeek::SCK::VERSION;
+        }
+        catch {
+            $error_message = App::Error->get_error_message_from(
+                $_,
+                {
+                    MAX_GENERATED_TIMES => vars->{sck}->max_generated_times,
+                    STATUS              => vars->{sck}->status,
+                }
+            );
+        };
     }
     return template(
         "index",
@@ -163,6 +177,7 @@ get qr{^/(.*)$}x => sub {
             bookmarklet_installed => params->{ib},
             version               => $Celogeek::SCK::VERSION,
             stats                 => $stats_info_ref,
+            error_message         => $error_message,
         }
     );
 };
