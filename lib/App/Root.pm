@@ -11,6 +11,8 @@ Root App for the dancer app SCK. This part manage request on "/" only
 use strict;
 use warnings;
 use 5.014;
+use Carp;
+use Data::Dumper;
 
 # VERSION
 
@@ -53,7 +55,7 @@ any [ 'get', 'post' ] => '/' => sub {
     };
 
     return redirect( "http://twitter.com/?status="
-            . uri_escape_utf8( join( ' - ', @title ) ) );
+          . uri_escape_utf8( join( ' - ', @title ) ) );
 };
 
 #facebook, call with f=1
@@ -73,15 +75,16 @@ any [ 'get', 'post' ] => '/' => sub {
     };
 
     return redirect( "http://www.facebook.com/share.php" . "?u="
-            . uri_escape_utf8($url) . "&t="
-            . uri_escape_utf8($title) );
+          . uri_escape_utf8($url) . "&t="
+          . uri_escape_utf8($title) );
 };
 
 #normal call with url
 any [ 'get', 'post' ] => '/' => sub {
     return pass() unless defined params->{url};
 
-    my ($short_url,      $stats_url, $error_message,
+    my (
+        $short_url,      $stats_url, $error_message,
         $notice_message, $top10_members
     );
 
@@ -89,10 +92,8 @@ any [ 'get', 'post' ] => '/' => sub {
         $short_url = vars->{base} . vars->{sck}->shorten( params->{url} );
         $stats_url = $short_url . "?s=1";
         if ( vars->{sck}->generated_times ) {
-            $notice_message
-                = "Generated after "
-                . vars->{sck}->generated_times
-                . " tries.";
+            $notice_message =
+              "Generated after " . vars->{sck}->generated_times . " tries.";
         }
         else {
             $notice_message = "Already registered in database";
@@ -101,7 +102,8 @@ any [ 'get', 'post' ] => '/' => sub {
     catch {
         $error_message = App::Error->get_error_message_from(
             $_,
-            {   MAX_GENERATED_TIMES => vars->{sck}->max_generated_times,
+            {
+                MAX_GENERATED_TIMES => vars->{sck}->max_generated_times,
                 STATUS              => vars->{sck}->status,
             }
         );
@@ -129,7 +131,8 @@ any [ 'get', 'post' ] => '/' => sub {
 
     return template(
         $tpl,
-        {   url            => params->{url},
+        {
+            url            => params->{url},
             short_url      => $short_url,
             stats_url      => $stats_url,
             top10_members  => $top10_members,
@@ -143,12 +146,23 @@ any [ 'get', 'post' ] => '/' => sub {
 };
 
 #no params, display the normal website
-get '/' => sub {
+get qr{^/(.*)$}x => sub {
+    my ($path) = splat;
+    return pass() if $path && !params->{s};
+    my $stats_info_ref;
+    if ( $path ) {
+        $stats_info_ref =
+          vars->{sck}->stats( $path, 'date_format' => '%c UTC' );
+        $stats_info_ref->{short_url} = vars->{base} . $stats_info_ref->{path};
+        $stats_info_ref->{version}   = $Celogeek::SCK::VERSION;
+    }
     return template(
         "index",
-        {   top10_members         => vars->{sck}->top10(),
+        {
+            top10_members         => vars->{sck}->top10(),
             bookmarklet_installed => params->{ib},
             version               => $Celogeek::SCK::VERSION,
+            stats                 => $stats_info_ref,
         }
     );
 };

@@ -1,5 +1,7 @@
-<li><a href="#shortenform"<% UNLESS bookmarklet_installed %> class="selected"<% END %>>Shorten your URL</a></li>
+<li><a href="#shortenform"<% UNLESS bookmarklet_installed || stats %> class="selected"<% END %>>Shorten your URL</a></li>
 <li style="display:none"><a href="#shortenlinks">Your shorten URL</a></li>
-<li style="display:none"><a href="#stats">Stats</a></li>
+<% IF stats %>
+<li><a href="#stats" class="selected">Stats</a></li>
+<% END %>
 <li><a href="#bookmarklet"<% IF bookmarklet_installed %> class="selected"<% END %>>Bookmarklet &amp; API</a></li>
 <li><a href="#changelog">Changelog</a></li>
