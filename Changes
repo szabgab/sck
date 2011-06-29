@@ -4,6 +4,8 @@ NEXT - 2011-06-29 18:00
     * Improve stats
         * Top10 link point to stats
         * Integrate stats in main screen
+        * Add twitter link with title
+        * Add facebook link with title
     * Check locally for bad ip first
     * Redirect to base instead of crash when short url doesnt exists
     * Add warning for illegal and porn link on home page

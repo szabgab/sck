@@ -18,6 +18,7 @@ use Try::Tiny;
 
 use Dancer ':syntax';
 use HTTP::BrowserDetect;
+use URI::Escape;
 
 #API part : params a=1
 get qr{^/(.+)$}x => sub {
@@ -34,6 +35,40 @@ get qr{^/(.+)$}x => sub {
     $longurl = vars->{base} unless defined $longurl;
 
     return $longurl;
+};
+
+#Twitter redirect
+get qr{^/(.+)$}x => sub {
+    return pass() unless defined params->{t};
+    my ($key) = splat();
+
+    #try enlarge key if exist
+    my ($key) = splat();
+    my $longurl;
+    try {
+        my $url = vars->{sck}->enlarge($key);
+        $longurl = vars->{base} . "?t=1&url=" . uri_escape_utf8($url);
+    };
+    $longurl = vars->{base} unless defined $longurl;
+
+    return redirect($longurl);
+};
+
+#Facebook redirect
+get qr{^/(.+)$}x => sub {
+    return pass() unless defined params->{f};
+    my ($key) = splat();
+
+    #try enlarge key if exist
+    my ($key) = splat();
+    my $longurl;
+    try {
+        my $url = vars->{sck}->enlarge($key);
+        $longurl = vars->{base} . "?f=1&url=" . uri_escape_utf8($url);
+    };
+    $longurl = vars->{base} unless defined $longurl;
+
+    return redirect($longurl);
 };
 
 #Normal part

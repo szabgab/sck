@@ -42,8 +42,8 @@ any [ 'get', 'post' ] => '/' => sub {
 any [ 'get', 'post' ] => '/' => sub {
     return pass() unless defined params->{t} && defined params->{url};
 
-    my @title = ();
-    push @title, params->{title} if params->{title};
+    my $fetch_title = params->{title} // vars->{sck}->title(params->{url}) // "";
+    my @title = ($fetch_title);
 
     try {
         push @title, vars->{base} . vars->{sck}->shorten( params->{url} );
@@ -62,7 +62,7 @@ any [ 'get', 'post' ] => '/' => sub {
 any [ 'get', 'post' ] => '/' => sub {
     return pass() unless defined params->{f} && defined params->{url};
 
-    my $title = params->{title} // "";
+    my $title = params->{title} // vars->{sck}->title(params->{url}) // "";
     my $url;
 
     try {

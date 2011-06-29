@@ -250,6 +250,21 @@ sub stats {
     }
 }
 
+=method title
+
+Return the title fetch from url
+
+=cut
+
+sub title {
+    my ($self, $url) = @_;
+    my $title;
+    if ( $self->redis->exists( $self->_hash_key($url) ) ) {
+        $title = $self->redis->hget($self->_hash_key($url), "title");
+    }
+    return $title;
+}
+
 =method top10
 
 Return the top10 of most clicks links of the week. Only one click per day per user add a score

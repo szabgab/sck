@@ -4,12 +4,26 @@
         <div class="span-13 last">
             <label for="url_r" class="span-2">Your URL</label>
             <input type="text" name="url_r" class="text readonly" value="<% stats.url %>"/>
-            <button href="<% stats.url %>" target="_blank" class="last">Go &gt;&gt;</button>
         </div>
         <div class="span-13 last">
             <label for="shorturl_r" class="span-2">Short URL</label>
             <input type="text" name="shorturl_r" class="text readonly" value="<% stats.short_url %>"/>
             <button href="<% stats.short_url %>" target="_blank" class="last">Go &gt;&gt;</button>
+        </div>
+        <div class="span-13 last">
+            <label for="statsurl_r" class="span-2">Stats URL</label>
+            <input type="text" name="statsurl_r" class="text readonly" value="<% stats.short_url %>?s=1"/>
+            <button href="<% stats.short_url %>?s=1" target="_top" class="last">Go &gt;&gt;</button>
+        </div>
+        <div class="span-13 last">
+            <label for="twitterurl_r" class="span-2">Twitter</label>
+            <input type="text" name="twitterurl_r" class="text readonly" value="<% stats.short_url %>?t=1"/>
+            <button href="<% stats.short_url %>?t=1" target="_blank" class="last">Go &gt;&gt;</button>
+        </div>
+        <div class="span-13 last">
+            <label for="facebookurl_r" class="span-2">Facebook</label>
+            <input type="text" name="facebookurl_r" class="text readonly" value="<% stats.short_url %>?f=1"/>
+            <button href="<% stats.short_url %>?f=1" target="_blank" class="last">Go &gt;&gt;</button>
         </div>
         <div class="span-13 last">
             <label for="url_r_created_at" class="span-2">Created at</label>
