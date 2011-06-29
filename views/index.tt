@@ -3,12 +3,17 @@
 </ul>
 <div>
     <div class="span-14 colborder">
-        <div id="shortenform" class="<% IF bookmarklet_installed %>tabclosed <% END %>">
+        <div id="shortenform" class="<% IF bookmarklet_installed || stats %>tabclosed <% END %>">
             <% INCLUDE _shortenformtab.tt %>
         </div>
         <div id="shortenlinks" class="tabclosed">
             <% INCLUDE _shortenlinks.tt %>
         </div>
+        <% IF stats %>
+        <div id="stats">
+            <% INCLUDE _statstab.tt %>
+        </div>
+        <% END %>
         <div id="bookmarklet" class="<% UNLESS bookmarklet_installed %>tabclosed <% END %>">
             <% IF bookmarklet_installed %>
             <div class="notice" id="bookmarklet_installed">Bookmarklet ready to be used !</div>
