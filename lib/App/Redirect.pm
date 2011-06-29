@@ -43,7 +43,6 @@ get qr{^/(.+)$}x => sub {
     my ($key) = splat();
 
     #try enlarge key if exist
-    my ($key) = splat();
     my $longurl;
     try {
         my $url = vars->{sck}->enlarge($key);
@@ -60,7 +59,6 @@ get qr{^/(.+)$}x => sub {
     my ($key) = splat();
 
     #try enlarge key if exist
-    my ($key) = splat();
     my $longurl;
     try {
         my $url = vars->{sck}->enlarge($key);
