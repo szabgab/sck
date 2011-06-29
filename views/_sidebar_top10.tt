@@ -6,7 +6,7 @@
             <% FOREACH top10_member = top10_members %>
             <div class="quiet">
                 <li>
-                <a href="<% request.base %><% top10_member.path %>" target="_blank" class="quiet" title="<% FILTER html %><% top10_member.alt %><% END %>">
+                <a href="<% request.base %><% top10_member.path %>?s=1" class="quiet" title="<% FILTER html %><% top10_member.alt %><% END %>">
                     <% FILTER truncate(50, "&hellip;") %><% top10_member.title %><% END %>
                 </a>
                 </li>
