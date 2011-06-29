@@ -30,11 +30,16 @@ use Net::DNS;
 $Celogeek::SCK::Analyzer::ANALYZER_VERSION = 2;
 
 #check dns
-my $_resolver        = Net::DNS::Resolver->new;
-my $_resolver_bad_ip = '67.215.65.130';
+my $_local_resolver = Net::DNS::Resolver->new;
+$_local_resolver->nameservers('127.0.0.1');
 
 #set opendns server
+my $_resolver        = Net::DNS::Resolver->new;
 $_resolver->nameservers( '208.67.222.222', '208.67.220.220' );
+
+#bad ip
+my $_resolver_bad_ip = '67.215.65.130';
+
 
 #init UA
 
@@ -163,10 +168,12 @@ sub _is_valid_host {
     my ( $self, $host ) = @_;
 
     #check porno/illegal
-    my $dns_message = $_resolver->search($host);
-    foreach my $rr ( $dns_message->answer ) {
-        next unless $rr->type eq 'A';
-        return 0 if $rr->address eq $_resolver_bad_ip;
+    foreach my $rs(($_local_resolver, $_resolver)) {
+        my $dns_message = $rs->search($host);
+        foreach my $rr ( $dns_message->answer ) {
+            next unless $rr->type eq 'A';
+            return 0 if $rr->address eq $_resolver_bad_ip;
+        }
     }
     return 1;
 }
