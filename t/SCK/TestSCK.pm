@@ -6,7 +6,6 @@ Dancer::Config->load;
 
 use App::Main;
 use App::Root;
-use App::Stats;
 use App::Redirect;
 
 package TestSCK;
