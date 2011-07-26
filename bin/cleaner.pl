@@ -32,7 +32,9 @@ foreach my $key ( $redis->keys("h:*") ) {
         next;
     }
 
-    if ( defined $content_type && $content_type eq 'application/octet-stream' ) {
+    if ( defined $content_type 
+&& $content_type !~ /text|xml|html|image/
+) {
         say "Bad content type : $url ($content_type)";
         $redis->del($key) if $cleaner->run();
         next;
