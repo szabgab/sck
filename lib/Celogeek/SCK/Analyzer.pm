@@ -170,10 +170,12 @@ sub _is_valid_host {
     #check porno/illegal
     foreach my $rs(($_local_resolver, $_resolver)) {
         my $dns_message = $rs->search($host);
-        foreach my $rr ( $dns_message->answer ) {
-            next unless $rr->type eq 'A';
-            return 0 if $rr->address eq $_resolver_bad_ip;
-        }
+	if (defined $dns_message && $dns_message->can('answer')) {
+		foreach my $rr ( $dns_message->answer ) {
+		    next unless $rr->type eq 'A';
+		    return 0 if $rr->address eq $_resolver_bad_ip;
+		}
+	}
     }
     return 1;
 }
