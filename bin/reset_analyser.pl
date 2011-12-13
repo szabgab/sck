@@ -12,9 +12,26 @@ use Dancer ':script';
 use Dancer::Plugin::Redis 0.3;
 use Celogeek::SCK::Analyzer;
 
+{
+	package cmd;
+	use Moo;
+	use MooX::Options;
+	option filter => (is => 'ro', format => "s", doc => 'filter regex for url');
+	option run => (is => 'ro', doc => 'run the clearer', default => 0);
+	1;
+}
+
+my $cmd = cmd->new_with_options;
 my $redis = redis;
 
+my $prefix = $cmd->run ? "Clear" : "Will clear";
 foreach my $key ( $redis->keys("h:*") ) {
-	$redis->hdel($key, 'analyzer');
+	my $url = $redis->hget($key, 'url');
+
+	defined $cmd->filter and 
+	($url =~ $cmd->filter or next);
+
+	say "$prefix $url";
+	$cmd->run and $redis->hdel($key, 'analyzer');
 }
 
