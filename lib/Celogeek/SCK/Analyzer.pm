@@ -183,8 +183,9 @@ sub _is_valid_host {
 sub _extract_header {
     my ( $self, $request ) = @_;
 
+    my $header = $request->header("Content-Type") // "text/html";
     my ( $content_type, $encoding )
-        = split( ';', $request->header("Content-Type") );
+        = split( ';', $header );
     $encoding //= "UTF-8";
     $encoding =~ s!charset=!!x;
 
