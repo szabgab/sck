@@ -16,13 +16,13 @@ use 5.014;
 
 #Initialise dancer app
 use Dancer ':syntax';
-use Dancer::Plugin::Redis 0.3;
+use Dancer::Plugin::Redis 0.03;
 
 #Load SCK module
 use Celogeek::SCK;
 
 #Initialize variable before any root
-before sub {
+hook before => sub {
 
     #the base url, use in short link
     var base => request->base()->as_string();
