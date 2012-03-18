@@ -18,7 +18,7 @@ use 5.014;
 
 # VERSION
 
-use Moose;
+use Moo;
 
 use Celogeek::SCK::Cleaner;
 my $_cleaner = Celogeek::SCK::Cleaner->new();
@@ -35,39 +35,47 @@ use DateTime::Format::DateParse;
 use Try::Tiny;
 use Encode;
 
+use Regexp::Common qw /number/;
+
 has 'redis' => (
     'is'       => 'rw',
-    'isa'      => 'Redis',
+    'isa'      => sub {
+        die "$_[0] is not a Redis object" unless ref $_[0] eq 'Redis';
+    },
     'required' => 1,
 );
 
 has 'generated_times' => (
     'is'      => 'rw',
-    'isa'     => 'Int',
-    'default' => 0,
+    'isa'     => sub {
+        die "$_[0] is not a number" unless $_[0] =~ /^$RE{num}{int}$/;
+    },
+    'default' => sub {0},
 );
 
 has 'max_generated_times' => (
     'is'      => 'rw',
-    'isa'     => 'Int',
-    'default' => 0,
+    'isa'     => sub {
+        die "$_[0] is not a number" unless $_[0] =~ /^$RE{num}{int}$/;
+    },
+    'default' => sub {0},
 );
 
 has 'max_letters' => (
     'is'      => 'rw',
-    'isa'     => 'Int',
-    'default' => 1,
+    'isa'     => sub {
+        die "$_[0] is not a number" unless $_[0] =~ /^$RE{num}{int}$/;
+    },
+    'default' => sub {1},
 );
 
 has 'status' => (
     'is'  => 'rw',
-    'isa' => 'Str',
 );
 
 has 'check_method' => (
     'is'      => 'rw',
-    'isa'     => 'Str',
-    'default' => 'header',
+    'default' => sub {'header'},
 );
 
 =method BUILD
@@ -379,6 +387,4 @@ sub _hash_key {
     return $self->_redis_key( 'h', $url );
 }
 
-no Moose;
-__PACKAGE__->meta->make_immutable();
 1;
