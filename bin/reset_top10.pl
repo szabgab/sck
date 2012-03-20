@@ -6,10 +6,11 @@
 use strict;
 use warnings;
 use 5.014;
+# VERSION
 use Carp;
 
 use Dancer ':script';
-use Dancer::Plugin::Redis 0.3;
+use Dancer::Plugin::Redis 0.03;
 use Celogeek::SCK::Analyzer;
 
 my $redis = redis;

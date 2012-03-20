@@ -11,10 +11,7 @@ use 5.014;
 use Data::Dumper;
 use Carp;
 
-use Moose;
-use MooseX::Types::URI qw(Uri);
-
-use Moose::Util::TypeConstraints;
+use Moo;
 
 use LWP::UserAgent;
 use Encode;
@@ -25,6 +22,8 @@ use Regexp::Common qw(whitespace);
 use Config::YAML;
 
 use Net::DNS;
+
+use URI;
 
 #set analyzer version, permit to rescan only old or new link
 $Celogeek::SCK::Analyzer::ANALYZER_VERSION = 2;
@@ -58,10 +57,6 @@ my $_ua_content = LWP::UserAgent->new;
 $_ua_content->agent($_agent);
 $_ua_content->timeout(30);
 
-subtype 'SCK:Method' => as 'Str' => where {
-    $_ eq 'host' || $_ eq 'header' || $_ eq 'full';
-};
-
 =attr uri
 
 URI to analyze
@@ -69,10 +64,12 @@ URI to analyze
 =cut
 
 has uri => (
-    isa      => Uri,
-    coerce   => 1,
-    is       => 'ro',
+    is       => 'rw',
     required => 1,
+    trigger => sub {
+        my ($self, $uri) = @_;
+        $self->uri(URI->new($uri)) unless ref $uri and $uri->isa('URI');
+    },
 );
 
 =attr header
@@ -82,9 +79,11 @@ Content all useful headers of uri
 =cut
 
 has header => (
-    isa     => 'HashRef',
     is      => 'rw',
     default => sub { {} },
+    isa => sub {
+        die "$_[0] is not a hash ref" unless ref $_[0] eq 'HASH'; 
+    },
 );
 
 =attr content
@@ -94,8 +93,10 @@ Content for url
 =cut
 
 has content => (
-    isa => 'HashRef',
     is  => 'rw',
+    isa => sub {
+        die "$_[0] is not a hash ref" unless ref $_[0] eq 'HASH'; 
+    },
 );
 
 =attr method
@@ -109,11 +110,14 @@ Method of extraction
 =cut
 
 has method => (
-    isa      => 'SCK:Method',
     is       => 'rw',
     required => 1,
-    default  => 'header',
+    default  => sub { 'header' },
+    isa => sub {
+        die "$_[0] is not one of 'host', 'header' or 'full'" unless $_[0] =~ /^(host|header|full)$/;
+    },
 );
+
 
 =method BUILD
 

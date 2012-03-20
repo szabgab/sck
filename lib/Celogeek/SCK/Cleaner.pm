@@ -11,17 +11,14 @@ use 5.014;
 use Data::Dumper;
 use Carp;
 
-use Moose;
-with 'MooseX::Getopt';
-use MooseX::Params::Validate;
-use MooseX::Types::URI qw(Uri);
+use Moo;
+use MooX::Options;
+use URI;
+use Regexp::Common qw/number/;
 
-has 'run' => (
-    documentation => 'remove bad link effectivly',
+option 'run' => (
+    doc           => 'remove bad link effectivly',
     is            => 'rw',
-    isa           => 'Bool',
-    required      => 1,
-    default       => 0,
 );
 
 =method is_valid_uri
@@ -31,14 +28,10 @@ Check if URI is valid
 =cut
 
 sub is_valid_uri {
-    my ( $self, @opts ) = @_;
-    my ($uri) = validated_list(
-        \@opts,
-        uri => {
-            isa    => Uri,
-            coerce => 1,
-        }
-    );
+    my ( $self, %opts ) = @_;
+    my $uri = $opts{uri};
+    ref $uri eq 'URI'
+        or $uri = URI->new($uri);
 
     my @bad_url_regexes = (
         qr{^localhost$}x,               qr{^localhost:}x,
