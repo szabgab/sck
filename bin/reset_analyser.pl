@@ -33,6 +33,6 @@ foreach my $key ( $redis->keys("h:*") ) {
 	($url =~ $cmd->filter or next);
 
 	say "$prefix $url";
-	$cmd->run and $redis->hdel( $key, 'analyzer' ) and $redis->hset($key, 'status', '403');
+	$cmd->run and ($redis->hdel( $key, 'analyzer' ), $redis->hset($key, 'status', '403'));
 }
 
