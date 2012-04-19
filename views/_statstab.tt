@@ -26,6 +26,11 @@
             <button href="<% stats.short_url %>?f=1" target="_blank" class="last">Go &gt;&gt;</button>
         </div>
         <div class="span-13 last">
+            <label for="googleplus_r" class="span-2">Google+</label>
+            <input type="text" name="googleplus_r" class="text readonly" value="<% stats.short_url %>?g=1"/>
+            <button href="<% stats.short_url %>?g=1" target="_blank" class="last">Go &gt;&gt;</button>
+        </div>
+        <div class="span-13 last">
             <label for="url_r_created_at" class="span-2">Created at</label>
             <input type="text" name="url_r_created_at" class="text readonly" value="<% stats.created_at %>"/>
         </div>

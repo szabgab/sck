@@ -20,6 +20,7 @@ use Dancer::Plugin::Redis 0.03;
 
 #Load SCK module
 use Celogeek::SCK;
+use Celogeek::SCK::Store;
 
 #Initialize variable before any root
 hook before => sub {
@@ -30,7 +31,7 @@ hook before => sub {
     #sck url tools to reduce link
     #set default settings, max_letters could be set later
     var sck => Celogeek::SCK->new(
-        'redis'               => redis,
+        'store'               => Celogeek::SCK::Store->new(engine => 'redis', connection => redis),
         'max_generated_times' => 5,
     );
 

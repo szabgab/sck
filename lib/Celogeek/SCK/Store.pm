@@ -9,9 +9,6 @@ use Moo;
 
 has 'engine' => (
     is => 'ro',
-    isa => sub {
-        die "not a valid engine" unless $_[0] =~ /^redis$/;
-    },
     required => 1,
 );
 

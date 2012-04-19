@@ -16,7 +16,9 @@ sub _die {
 }
 
 #method need to be implemented
-for my $meth (qw/validate_connection set_config get_config/) {
+for my $meth (qw/
+        validate_connection
+    /) {
     eval <<EOF
     sub $meth { shift->_die }
 EOF
