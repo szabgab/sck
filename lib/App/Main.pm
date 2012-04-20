@@ -21,6 +21,11 @@ use Dancer ':syntax';
 use Celogeek::SCK;
 use Celogeek::SCK::Store;
 
+my $SCK = Celogeek::SCK->new(
+    'store'               => Celogeek::SCK::Store->new_with_config(config->{store}),
+    'max_generated_times' => 5,
+);
+
 #Initialize variable before any root
 hook before => sub {
 
@@ -29,10 +34,7 @@ hook before => sub {
 
     #sck url tools to reduce link
     #set default settings, max_letters could be set later
-    var sck => Celogeek::SCK->new(
-        'store'               => Celogeek::SCK::Store->new_with_config(config->{store}),
-        'max_generated_times' => 5,
-    );
+    var sck => $SCK;
 
     #set max letter if url is pass
     if ( defined params->{url} ) {
