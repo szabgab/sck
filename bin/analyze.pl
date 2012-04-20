@@ -25,7 +25,7 @@ while( my ($url, $info) = each %urls_info ) {
         }
         else {
             if ( defined $info->{analyzer}
-                && $info->{analyzer} ==
+                && 0 + $info->{analyzer} ==
                 $Celogeek::SCK::Analyzer::ANALYZER_VERSION )
             {
                 next;
