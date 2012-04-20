@@ -4,6 +4,7 @@ package Celogeek::SCK::Store;
 
 use strict;
 use warnings;
+use Carp;
 # VERSION
 use Moo;
 
@@ -40,6 +41,7 @@ sub new_with_config {
     1;
 EOF
     ;
+    croak "You have an error in your config.\n", $@ if $@;
     $class->new(engine => $config->{engine}, connection => MyConf->connection);
 }
 
