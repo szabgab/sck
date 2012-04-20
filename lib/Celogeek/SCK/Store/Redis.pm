@@ -46,14 +46,20 @@ sub set_by_url {
     my $self = shift;
     my ($url, %info) = @_;
 
+    my $h_url = 'h:'.sha1_hex($url);
 
     if (defined $info{path}) {
         #keep index
-        $self->connection->set('p:'.sha1_hex($info{path}), 'h:'.sha1_hex($url));
+        $self->connection->set('p:'.sha1_hex($info{path}), $h_url);
         #add url to info
         $info{url} = $url;
     }
-    $self->connection->hmset('h:'.sha1_hex($url), %info);
+    #separate null from defined value to call 2 cmd
+    my @to_del = grep { !defined $info{$_} } keys %info;
+    delete $info{$_} for @to_del;
+
+    $self->connection->hdel($h_url, @to_del) if @to_del;
+    $self->connection->hmset($h_url, %info) if keys %info;
 
     return;
 }
