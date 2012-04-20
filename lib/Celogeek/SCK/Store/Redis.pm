@@ -227,4 +227,21 @@ sub top10 {
     return @top10_data;
 }
 
+=method all_by_url
+
+Return all url object
+
+=cut
+sub all_by_url {
+    my $self = shift;
+
+    my %urls_info;
+    foreach my $key($self->connection->keys('h:*')) {
+        my %info = $self->connection->hgetall($key);
+        $urls_info{delete $info{url}} = \%info;
+    }
+
+    return %urls_info;
+}
+
 1;
