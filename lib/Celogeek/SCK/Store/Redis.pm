@@ -227,6 +227,18 @@ sub top10 {
     return @top10_data;
 }
 
+=method reset_top10
+
+Clear top10
+
+=cut
+
+sub reset_top10 {
+    my $self = shift;
+
+    $self->connection->del('s:top10');
+}
+
 =method all_by_url
 
 Return all url object
