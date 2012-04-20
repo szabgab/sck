@@ -25,4 +25,22 @@ sub BUILD {
     $self->validate_connection();
 }
 
+sub new_with_config {
+    my $class = shift;
+    my ($config) = @_;
+    my $config_class = $config->{class};
+    my $config_keyword = $config->{keyword};
+    eval <<EOF
+    package MyConf;
+    use strict;
+    use warnings;
+    use Dancer ':syntax';
+    use $config_class;
+    sub connection { $config_keyword }
+    1;
+EOF
+    ;
+    $class->new(engine => $config->{engine}, connection => MyConf->connection);
+}
+
 1;

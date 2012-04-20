@@ -31,7 +31,7 @@ hook before => sub {
     #sck url tools to reduce link
     #set default settings, max_letters could be set later
     var sck => Celogeek::SCK->new(
-        'store'               => Celogeek::SCK::Store->new(engine => 'redis', connection => redis),
+        'store'               => Celogeek::SCK::Store->new_with_config(config->{store}),
         'max_generated_times' => 5,
     );
 
