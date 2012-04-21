@@ -1,12 +1,11 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 3;
+use Test::More;
 
-use Redis;
-my $r = Redis->new( server => "127.0.0.1:16379" );
-if ( is( $r->ping, "PONG", "Check connexion" ) ) {
-    is( $r->flushall(), "OK", "Flushall" );
-    is( $r->shutdown(), "1",  "Shutdown" );
-}
+use Dancer::Test;
+Dancer::set environment => 'testing';
+Dancer::Config->load;
+require 't/SCK/engine/'.Dancer::config->{store}->{engine}.'_unload.ttt';
 
+done_testing;
