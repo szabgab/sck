@@ -16,23 +16,26 @@ use 5.014;
 
 #Initialise dancer app
 use Dancer ':syntax';
-use Dancer::Plugin::Redis 0.03;
 
 #Load SCK module
 use Celogeek::SCK;
+use Celogeek::SCK::Store;
+
+my $SCK;
 
 #Initialize variable before any root
 hook before => sub {
+    $SCK //= Celogeek::SCK->new(
+        'store'               => Celogeek::SCK::Store->new_with_config(config->{store}),
+        'max_generated_times' => 5,
+    );
 
     #the base url, use in short link
     var base => request->base()->as_string();
 
     #sck url tools to reduce link
     #set default settings, max_letters could be set later
-    var sck => Celogeek::SCK->new(
-        'redis'               => redis,
-        'max_generated_times' => 5,
-    );
+    var sck => $SCK;
 
     #set max letter if url is pass
     if ( defined params->{url} ) {

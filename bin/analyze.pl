@@ -10,22 +10,22 @@ use 5.014;
 use Carp;
 
 use Dancer ':script';
-use Dancer::Plugin::Redis 0.03;
+use Celogeek::SCK::Store;
 use Celogeek::SCK::Analyzer;
 
-my $redis = redis;
+my $store = Celogeek::SCK::Store->new_with_config(config->{store});
+my %urls_info = $store->all_by_url;
 
-foreach my $key ( $redis->keys("h:*") ) {
-    my %info = $redis->hgetall($key);
+while( my ($url, $info) = each %urls_info ) {
     unless ( $ENV{FORCE} ) {
         if ( $ENV{FORCE_ONLY_BAD_STATUS} ) {
-            if ( ( $info{status} // '' ) eq '200 OK' ) {
+            if ( ( $info->{status} // '' ) eq '200 OK' ) {
                 next;
             }
         }
         else {
-            if ( defined $info{analyzer}
-                && $info{analyzer} ==
+            if ( defined $info->{analyzer}
+                && 0 + $info->{analyzer} ==
                 $Celogeek::SCK::Analyzer::ANALYZER_VERSION )
             {
                 next;
@@ -33,15 +33,10 @@ foreach my $key ( $redis->keys("h:*") ) {
         }
     }
 
-    #get real uri
-    my ($url) = $info{url};
-    my ($path) = $info{path};
-
     say "";
-    say "Analyzing $key";
-    say "   URL : ", $url;
-    say " Short : http://sck.to/", $path;
-    say " Stats : http://sck.to/", $path,"?s=1";
+    say "Analyzing <$url>";
+    say " Short : http://sck.to/", $info->{path};
+    say " Stats : http://sck.to/", $info->{path},"?s=1";
 
     my $analyzer =
       Celogeek::SCK::Analyzer->new( uri => $url, method => 'full' );
@@ -52,20 +47,23 @@ foreach my $key ( $redis->keys("h:*") ) {
     say "   Status : ",       $header->{status};
     say "   Content-Type : ", $header->{content_type};
     say "   Encoding : ",     $header->{encoding};
-    foreach my $header_key (qw(status content_type encoding)) {
-        $redis->hset( $key, $header_key, $header->{$header_key} );
-    }
 
-    #set analyzer version if status OK
-    $redis->hset( $key, 'analyzer',
-        $Celogeek::SCK::Analyzer::ANALYZER_VERSION );
+    $store->set_by_url($url, 
+        status => $header->{status},
+        content_type => $header->{content_type},
+        encoding => $header->{encoding},
+        analyzer => $Celogeek::SCK::Analyzer::ANALYZER_VERSION,
+    );
 
     my $content = $analyzer->content();
     next unless $content;
     say "   Title : ",         $content->{title};
     say "   Short Content : ", $content->{short_content};
-    $redis->hset( $key, 'title',         $content->{title} );
-    $redis->hset( $key, 'short_content', $content->{short_content} );
+    
+    $store->set_by_url($url,
+        title => $content->{title},
+        short_content => $content->{short_content},
+    );
 
 }
 

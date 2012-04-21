@@ -10,8 +10,7 @@ use 5.014;
 use Carp;
 
 use Dancer ':script';
-use Dancer::Plugin::Redis 0.03;
-use Celogeek::SCK::Analyzer;
+use Celogeek::SCK::Store;
 
 {
 	package cmd;
@@ -23,16 +22,19 @@ use Celogeek::SCK::Analyzer;
 }
 
 my $cmd = cmd->new_with_options;
-my $redis = redis;
+my $store = Celogeek::SCK::Store->new_with_config(config->{store});
+my %urls_info = $store->all_by_url;
 
 my $prefix = $cmd->run ? "Clear" : "Will clear";
-foreach my $key ( $redis->keys("h:*") ) {
-	my $url = $redis->hget($key, 'url');
+while( my ($url, $info) = each %urls_info ) {
 
-	defined $cmd->filter and 
-	($url =~ $cmd->filter or next);
+    next if defined $cmd->filter && $url !~ $cmd->filter;
 
 	say "$prefix $url";
-	$cmd->run and ($redis->hdel( $key, 'analyzer' ), $redis->hset($key, 'status', '403'));
+    $store->set_by_url($url,
+        analyzer => undef,
+        status => 403,
+    ) if $cmd->run;
+
 }
 
