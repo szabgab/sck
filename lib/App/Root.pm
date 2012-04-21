@@ -38,30 +38,10 @@ any [ 'get', 'post' ] => '/' => sub {
     };
 };
 
-#twitter, call with t=1
+#twitter / facebook / google+ / with url
 any [ 'get', 'post' ] => '/' => sub {
-    return pass() unless defined params->{t} && defined params->{url};
-
-    my $fetch_title = params->{title} // vars->{sck}->title( params->{url} )
-      // "";
-    my @title = ($fetch_title);
-
-    try {
-        push @title, vars->{base} . vars->{sck}->shorten( params->{url} );
-    }
-    catch {
-
-        #push long title if any error occur
-        push @title, params->{url};
-    };
-
-    return redirect( "http://twitter.com/?status="
-          . uri_escape_utf8( join( ' - ', @title ) ) );
-};
-
-#facebook, call with f=1
-any [ 'get', 'post' ] => '/' => sub {
-    return pass() unless defined params->{f} && defined params->{url};
+    my ($service) = grep { defined params->{$_} } qw/t f g/;
+    return pass() unless defined $service && defined params->{url};
 
     my $title = params->{title} // vars->{sck}->title( params->{url} ) // "";
     my $url;
@@ -70,14 +50,21 @@ any [ 'get', 'post' ] => '/' => sub {
         $url = vars->{base} . vars->{sck}->shorten( params->{url} );
     }
     catch {
-
         #push long title if any error occur
         $url = params->{url};
     };
 
-    return redirect( "http://www.facebook.com/share.php" . "?u="
-          . uri_escape_utf8($url) . "&t="
-          . uri_escape_utf8($title) );
+    if ($service eq 't') { #twitter
+        return redirect( "http://twitter.com/?status="
+            . uri_escape_utf8( join( ' - ', $title, $url ) ) );
+    } elsif ( $service eq 'f' ) { #facebook
+        return redirect( "http://www.facebook.com/share.php" 
+            . "?u=" . uri_escape_utf8($url) 
+            . "&t=" . uri_escape_utf8($title) );
+    } elsif ( $service eq 'g' ) { #google +
+        return redirect( "https://plus.google.com/share?url="
+            . uri_escape_utf8($url) );
+    }
 };
 
 #normal call with url

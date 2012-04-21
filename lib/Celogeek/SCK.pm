@@ -6,7 +6,7 @@ package Celogeek::SCK;
 
     use Celogeek::SCK;
 
-    my $sck = Celogeek::SCK->new(redis => redis, max_generated_times => 5, max_letters => 10);
+    my $sck = Celogeek::SCK->new(store => Celogeek::SCK::Store->new(...), max_generated_times => 5, max_letters => 10);
     my $short_url = $sck->shorten('http://www.montest.com');
     my $long_url = $sck->enlarge($short_url);
 
@@ -37,10 +37,10 @@ use Encode;
 
 use Regexp::Common qw /number/;
 
-has 'redis' => (
+has 'store' => (
     'is'       => 'rw',
     'isa'      => sub {
-        die "$_[0] is not a Redis object" unless ref $_[0] eq 'Redis';
+        die "$_[0] is not a Celogeek::SCK::Store object" unless $_[0]->isa('Celogeek::SCK::Store');
     },
     'required' => 1,
 );
@@ -69,6 +69,11 @@ has 'max_letters' => (
     'default' => sub {1},
 );
 
+has 'min_letters' => (
+    'is' => 'rw',
+    'default' => sub {1},
+);
+
 has 'status' => (
     'is'  => 'rw',
 );
@@ -77,19 +82,6 @@ has 'check_method' => (
     'is'      => 'rw',
     'default' => sub {'header'},
 );
-
-=method BUILD
-
-Initialize the SCK core.
-
-=cut
-
-sub BUILD {
-    my ($self) = @_;
-    $self->redis->incr('c:min_letters')
-        unless $self->redis->exists('c:min_letters');
-    return;
-}
 
 =method generate
 
@@ -103,34 +95,33 @@ It throw "SCK:[NO WAY TO SHORTEN]" if the generator couldn't find anything
 sub generate {
     my ($self) = @_;
 
-    my $key_size = $self->redis->get('c:min_letters');
-    croak 'SCK:[NO WAY TO SHORTEN]' if $self->max_letters < $key_size;
+    croak 'SCK:[NO WAY TO SHORTEN]' if $self->max_letters < $self->min_letters;
 
     my @letters_to_use = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9, '/' );
 
     while ( $self->max_generated_times > $self->generated_times ) {
 
-        #get random data to build a key with the size of key_size
-        my $key = rand_data_string( $key_size, \@letters_to_use );
+        #get random data to build a key with the size of min_letters
+        my $shorturl = rand_data_string( $self->min_letters, \@letters_to_use );
 
         #cleanup (remove double /, / on start and at the end)
-        $key =~ s!/+!/!xg;
-        $key =~ s!/$!!x;
-        $key =~ s!^/!!x;
-        next if $key eq '';    #one letter, only a /
+        $shorturl =~ s!/+!/!xg;
+        $shorturl =~ s!/$!!x;
+        $shorturl =~ s!^/!!x;
+        next if $shorturl eq '';    #one letter, only a /
 
         $self->generated_times( $self->generated_times + 1 );
 
         #we got a new key !
-        unless ( $self->redis->exists( $self->_path_key($key) ) ) {
-            return $key;
+        unless ( $self->store->exists_by_shorturl( $shorturl ) ) {
+            return $shorturl;
         }
     }
 
     #try again with a min_letters + 1
     $self->max_generated_times(
         $self->max_generated_times + $self->generated_times );
-    $self->redis->incr('c:min_letters');
+    $self->min_letters($self->min_letters + 1);
     return $self->generate();
 }
 
@@ -149,13 +140,11 @@ sub shorten {
         croak 'SCK:[BAD URL]';
     };
 
-    #look in redis db
-    my $hash_key = $self->_hash_key($url);
-    if ( $self->redis->exists($hash_key) ) {
-        return $self->redis->hget( $hash_key, 'path' );
+    #check if we have already shortenize the url
+    if ( $self->store->exists_by_url($url) ) {
+        return $self->store->get_by_url($url, 'path' );
     }
     else {
-
         #check url
         my $analyzer = Celogeek::SCK::Analyzer->new(
             uri    => $url,
@@ -177,17 +166,14 @@ sub shorten {
         #generate a new one
         $self->generated_times(0);
         my $short = $self->generate();
-        $self->_save(
-            $hash_key,
-            {   url              => $url,
-                path             => $short,
-                clicks           => 0,
-                clicks_uniq      => 0,
-                created_at       => DateTime->now,
-                last_accessed_at => DateTime->now
-            }
+        my $now = _datetime_str(DateTime->now);
+        $self->store->set_by_url($url,
+            path             => $short,
+            clicks           => 0,
+            clicks_uniq      => 0,
+            created_at       => $now,
+            last_accessed_at => $now,
         );
-        $self->redis->set( $self->_path_key($short), $hash_key );
         return $short;
     }
 }
@@ -199,38 +185,36 @@ Try to get the long url from a key
 =cut
 
 sub enlarge {
-    my ( $self, $key, %opts ) = @_;
+    my ( $self, $shorturl, %opts ) = @_;
     my $clicks      = $opts{clicks}      // 0;
     my $clicks_uniq = $opts{clicks_uniq} // 0;
     croak 'SCK:[THIS KEY DOESNT EXIST]'
-        unless ( $self->redis->exists( $self->_path_key($key) ) );
-
-    my $hash_key = $self->redis->get( $self->_path_key($key) );
+    unless $self->store->exists_by_shorturl($shorturl);
 
     #we have a clicks
     if ($clicks) {
         my $today = DateTime->now; 
 
         #incr click part
-        $self->redis->hincrby( $hash_key, 'clicks', 1 );
-        $self->redis->hincrby( 's:traffic', $today->ymd, 1 );
+        $self->store->increment_by_shorturl($shorturl, 'clicks', 1);
+        $self->store->increment_stat('traffic', $today->ymd, 1);
 
         #we have a clicks_uniq
         if ($clicks_uniq) {
 
             #add score to element
-            $self->redis->hincrby( $hash_key, 'clicks_uniq', 1 );
+            $self->store->increment_by_shorturl($shorturl, 'clicks_uniq', 1);
 
             #add a score to top10
-            $self->redis->zincrby( 's:top10', 1, $hash_key );
+            $self->store->increment_top10_by_shorturl($shorturl, 1);
 
             #add a score to traffic
 
-            $self->redis->hincrby( 's:traffic:uniq', $today->ymd, 1 );
+            $self->store->increment_stat('traffic:uniq', $today->ymd, 1);
         }
-        $self->_save( $hash_key, { last_accessed_at => $today } );
+        $self->store->set_by_shorturl( $shorturl, last_accessed_at => _datetime_str($today) );
     }
-    return $self->redis->hget( $hash_key, 'url' );
+    return $self->store->url_from_shorturl($shorturl);
 }
 
 =method stats
@@ -240,18 +224,18 @@ Return stats for a specific key
 =cut
 
 sub stats {
-    my ( $self, $key, %opts ) = @_;
+    my ( $self, $shorturl, %opts ) = @_;
     $opts{date_format} //= '%c UTC';
 
-    if ( $self->redis->exists( $self->_path_key($key) ) ) {
-        my $data = $self->_get( $self->redis->get( $self->_path_key($key) ) );
+    if ( $self->store->exists_by_shorturl( $shorturl ) ) {
+        my %data = $self->store->get_by_shorturl($shorturl);
         foreach my $d (qw/created_at last_accessed_at/) {
-            if ( $data->{$d} ) {
-                $data->{$d} = $self->_datetime( $data->{$d} )
+            if ( $data{$d} ) {
+                $data{$d} = _datetime( $data{$d} )
                     ->strftime( $opts{date_format} );
             }
         }
-        return $data;
+        return \%data;
     }
     else {
         croak 'SCK:[THIS KEY DOESNT EXIST]';
@@ -266,11 +250,7 @@ Return the title fetch from url
 
 sub title {
     my ($self, $url) = @_;
-    my $title;
-    if ( $self->redis->exists( $self->_hash_key($url) ) ) {
-        $title = $self->redis->hget($self->_hash_key($url), "title");
-    }
-    return $title;
+    $self->store->get_by_url($url, 'title');
 }
 
 =method top10
@@ -282,45 +262,13 @@ Return the top10 of most clicks links of the week. Only one click per day per us
 sub top10 {
     my ($self) = @_;
 
-    my @members_with_score
-        = $self->redis->zrevrange( 's:top10', 0, 9, 'WITHSCORES' );
-    my @top10_data = ();
-
-    for ( my $i = 0; $i < @members_with_score; $i += 2 ) {
-        my ( $member_key, $member_score )
-            = @members_with_score[ $i .. $i + 1 ];
-
-        #fetch data
-        my $data = { score => $member_score };
-        $data->{$_} = $self->redis->hget( $member_key, $_ )
-            for qw/url path title/;
-
-        $data->{alt} = '';
-
-        # too many try, never try again
-        if ( $data->{title} ) {
-            Encode::_utf8_on( $data->{title} );
-
-            #if title exist, use it
-            if ( $data->{title} ne $data->{url} ) {
-                $data->{alt} = $data->{title} . ' - ';
-            }
-        }
-        else {
-            $data->{title} = $data->{url};
-        }
-
-        #set alt
-        $data->{alt} .= $data->{url} . ' - Score ' . $data->{score};
-
-        push @top10_data, $data;
-    }
-    return \@top10_data;
+    my @top10 = $self->store->top10(title => qr/^[a-zA-Z0-9\.\s\'\"\(\)\r\n\[\]\{\}\|\-\,\;\&\:\!\?\/\#\@\<\>\+\*\™\’\»\_\$\£\=]+$/);
+    return \@top10;
 }
 
 #return a formated DateTime from DateTime or String
 sub _datetime {
-    my ( $self, $date ) = @_;
+    my ( $date ) = @_;
     if ( ref $date && $date->isa('DateTime') ) {
         return $date;
     }
@@ -331,60 +279,9 @@ sub _datetime {
 
 #return a str of DateTime
 sub _datetime_str {
-    my $self = shift;
-    my $date = shift;
+    my ($date) = @_;
 
     return $date->ymd . ' ' . $date->hms;
-}
-
-#save a hash to redis
-sub _save {
-    my $self     = shift;
-    my $hash_key = shift;
-    my $data     = shift;
-
-    foreach my $key ( keys %$data ) {
-        my $val = $data->{$key};
-        if ( ref $val eq 'DateTime' ) {
-            $data->{$key} = $self->_datetime_str($val);
-        }
-    }
-    $self->redis->hmset( $hash_key, %$data );
-
-    return;
-}
-
-#get an hash from redis
-sub _get {
-    my $self     = shift;
-    my $hash_key = shift;
-    my %data
-        = $self->redis->exists($hash_key)
-        ? $self->redis->hgetall($hash_key)
-        : ();
-    return \%data;
-}
-
-#common part of redis key
-sub _redis_key {
-    my $self   = shift;
-    my $prefix = shift;
-    my $key    = shift;
-    return $prefix . ':' . sha1_hex($key);
-}
-
-#key for path (short link), start with p:
-sub _path_key {
-    my $self = shift;
-    my $path = shift;
-    return $self->_redis_key( 'p', $path );
-}
-
-#key for hash (url information), start with h:
-sub _hash_key {
-    my $self = shift;
-    my $url  = shift;
-    return $self->_redis_key( 'h', $url );
 }
 
 1;

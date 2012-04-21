@@ -10,11 +10,7 @@ use 5.014;
 use Carp;
 
 use Dancer ':script';
-use Dancer::Plugin::Redis 0.03;
-use Celogeek::SCK::Analyzer;
+use Celogeek::SCK::Store;
 
-my $redis = redis;
-
-$redis->del("s:top10");
-$redis->set("c:min_letters", 1);
-
+my $store = Celogeek::SCK::Store->new_with_config(config->{store});
+$store->reset_top10;

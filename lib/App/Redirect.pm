@@ -37,32 +37,17 @@ get qr{^/(.+)$}x => sub {
     return $longurl;
 };
 
-#Twitter redirect
+#Twitter / Facebook / Google+ / no url
 get qr{^/(.+)$}x => sub {
-    return pass() unless defined params->{t};
+    my ($service) = grep { defined params->{$_} } qw/t f g/;
+    return pass() unless defined $service;
     my ($key) = splat();
 
     #try enlarge key if exist
     my $longurl;
     try {
         my $url = vars->{sck}->enlarge($key);
-        $longurl = vars->{base} . "?t=1&url=" . uri_escape_utf8($url);
-    };
-    $longurl = vars->{base} unless defined $longurl;
-
-    return redirect($longurl);
-};
-
-#Facebook redirect
-get qr{^/(.+)$}x => sub {
-    return pass() unless defined params->{f};
-    my ($key) = splat();
-
-    #try enlarge key if exist
-    my $longurl;
-    try {
-        my $url = vars->{sck}->enlarge($key);
-        $longurl = vars->{base} . "?f=1&url=" . uri_escape_utf8($url);
+        $longurl = vars->{base} . "?" . $service . "=1&url=" . uri_escape_utf8($url);
     };
     $longurl = vars->{base} unless defined $longurl;
 
