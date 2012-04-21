@@ -1,3 +1,10 @@
+2.5 - 2012-04-21 21:00
+====
+
+   * Create Store object to allow easy switch to over db system
+   * Add Google+ shortcut
+   * Factorize and simplify the code
+
 2.4 - 2012-03-31 12:00
 ====
 
