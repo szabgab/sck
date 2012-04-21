@@ -31,9 +31,9 @@ sub get_by_url {
     my $self = shift;
     my ($url, $key) = @_;
     if (defined $key) {
-        return $self->connection->hget('h:'.sha1_hex($url), $key),
+        return $self->connection->hget(_h_url($url), $key),
     } else {
-        return $self->connection->hgetall('h:'.sha1_hex($url)),
+        return $self->connection->hgetall(_h_url($url)),
     }
 }
 
@@ -46,11 +46,11 @@ sub set_by_url {
     my $self = shift;
     my ($url, %info) = @_;
 
-    my $h_url = 'h:'.sha1_hex($url);
+    my $h_url = _h_url($url);
 
     if (defined $info{path}) {
         #keep index
-        $self->connection->set('p:'.sha1_hex($info{path}), $h_url);
+        $self->connection->set(_h_shorturl($info{path}), $h_url);
         #add url to info
         $info{url} = $url;
     }
@@ -73,7 +73,7 @@ sub exists_by_url {
     my $self = shift;
     my ($url) = @_;
 
-    $self->connection->exists('h:'.sha1_hex($url));
+    $self->connection->exists(_h_url($url));
 }
 
 =method increment_by_url
@@ -85,7 +85,7 @@ sub increment_by_url {
     my $self = shift;
     my ($url, $counter, $number) = @_;
 
-    $self->connection->hincrby('h:'.sha1_hex($url), $counter, $number // 1);
+    $self->connection->hincrby(_h_url($url), $counter, $number // 1);
 }
 
 
@@ -122,7 +122,7 @@ sub exists_by_shorturl {
     my $self = shift;
     my ($shorturl) = @_;
 
-    $self->connection->exists('p:'.sha1_hex($shorturl));
+    $self->connection->exists(_h_shorturl($shorturl));
 }
 
 =method increment_by_shorturl
@@ -145,7 +145,7 @@ Add score to a url by its url
 sub increment_top10_by_url {
     my $self = shift;
     my ($url, $number) = @_;
-    $self->connection->zincrby( 's:top10', $number // 1, 'h:'.sha1_hex($url) );
+    $self->connection->zincrby( 's:top10', $number // 1, _h_url($url) );
 }
 
 =method increment_stat
@@ -179,7 +179,7 @@ sub url_from_shorturl {
     my $self = shift;
     my ($shorturl) = @_;
 
-    my $h_url = $self->connection->get('p:'.sha1_hex($shorturl));
+    my $h_url = $self->connection->get(_h_shorturl($shorturl));
     $self->connection->hget($h_url, 'url');
 }
 
@@ -260,6 +260,40 @@ sub all_by_url {
     }
 
     return %urls_info;
+}
+
+=method del_by_url
+
+Remove an url, it's shortcut and it's top10
+
+=cut
+sub del_by_url {
+    my $self = shift;
+    my ($url) = @_;
+    my $path = $self->get_by_url($url, 'path');
+
+    my $h_url = _h_url($url);
+    my $h_shorturl = _h_shorturl($path);
+
+    #delete url
+    $self->connection->del($h_url);
+    #delete shorturl
+    $self->connection->del($h_shorturl);
+    #remove top10
+    $self->connection->zrem( 's:top10', $h_url );
+
+}
+
+#determine the search key for an url
+sub _h_url {
+    my ($url) = @_;
+    return 'h:'.sha1_hex($url);
+}
+
+#determine the search key for a shorturl
+sub _h_shorturl {
+    my ($shorturl) = @_;
+    return 'p:'.sha1_hex($shorturl);
 }
 
 1;
