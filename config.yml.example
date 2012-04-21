@@ -30,7 +30,21 @@ engines:
         COMPILE_EXT: '.ttc'
         COMPILE_DIR: '/tmp/ttc'
 
+store:
+    engine: redis
+    keyword: redis
+    class: Dancer::Plugin::Redis
+
 plugins:
     Redis:
         server: '127.0.0.1:6379'
+        encoding: utf8
         debug: 0
+        connections:
+            test:
+                server: '127.0.0.1:6379'
+                encoding: utf8
+                debug: 0
+    Mongo:
+        host: localhost
+        db_name: sck
