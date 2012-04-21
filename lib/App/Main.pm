@@ -21,13 +21,14 @@ use Dancer ':syntax';
 use Celogeek::SCK;
 use Celogeek::SCK::Store;
 
-my $SCK = Celogeek::SCK->new(
-    'store'               => Celogeek::SCK::Store->new_with_config(config->{store}),
-    'max_generated_times' => 5,
-);
+my $SCK;
 
 #Initialize variable before any root
 hook before => sub {
+    $SCK //= Celogeek::SCK->new(
+        'store'               => Celogeek::SCK::Store->new_with_config(config->{store}),
+        'max_generated_times' => 5,
+    );
 
     #the base url, use in short link
     var base => request->base()->as_string();
