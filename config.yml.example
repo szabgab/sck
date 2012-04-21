@@ -40,11 +40,6 @@ plugins:
         server: '127.0.0.1:6379'
         encoding: utf8
         debug: 0
-        connections:
-            test:
-                server: '127.0.0.1:6379'
-                encoding: utf8
-                debug: 0
     Mongo:
         host: localhost
         db_name: sck
